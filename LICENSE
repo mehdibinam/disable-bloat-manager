@@ -1,48 +1,68 @@
-Bloat Manager - Proprietary "View-Only" License
+Bloat Manager - Proprietary License
 Copyright (c) 2026 Mehdi Binam. All Rights Reserved.
 
-The source code in this repository is made publicly visible for viewing and
-reference purposes only.
+1. OWNERSHIP
+The software and all associated source code, documentation, and materials in
+this repository are protected by copyright and remain the property of the
+copyright holder.
 
-You MAY:
-  - View and read the source code.
-  - Install and use the unmodified plugin on your own websites.
+2. LIMITED GITHUB PLATFORM RIGHTS
+Because this repository is public, GitHub users may view and fork it within
+GitHub, subject to the GitHub Terms of Service and the functionality of the
+GitHub platform. This limited platform permission exists only to enable use
+of GitHub's services. It does not grant any additional license to the
+software.
 
-You MAY NOT, without prior written permission from the copyright holder:
-  - Copy, duplicate, or reproduce the code, in whole or in part.
-  - Fork, clone for redistribution, mirror, or republish this repository.
-  - Modify, adapt, translate, or create derivative works.
-  - Distribute, sublicense, sell, rent, or share the code or any build of it.
-  - Include the code in any other plugin, theme, product, or service.
-  - Use the code to train or fine-tune machine learning models.
+3. ALL OTHER RIGHTS RESERVED
+Except for the limited rights described in Section 2, no permission is
+granted to use, run, copy, reproduce, modify, adapt, translate, create
+derivative works from, distribute, publish, sublicense, sell, or commercially
+exploit this software or any part of it, unless the copyright holder gives
+prior written permission.
 
-No license or right is granted except those expressly stated above.
+In particular, a GitHub fork does not grant permission to use, modify,
+distribute, or publish the software outside the rights expressly granted by
+GitHub's Terms of Service.
 
+4. NO WARRANTY
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR
-OTHER LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+IMPLIED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
 
-Contact: https://t.me/Mehdibinam
+5. PERMISSIONS AND CONTACT
+For permissions beyond the limited GitHub platform rights, contact:
+https://t.me/Mehdibinam
 
 ----------------------------------------------------------------------------
 
-لایسنس اختصاصی «فقط مشاهده» — Bloat Manager
+مجوز اختصاصی — Bloat Manager
 حق نشر (c) 2026 مهدی بینام. تمامی حقوق محفوظ است.
 
-کد منبع این مخزن صرفاً برای مشاهده و مرجع به صورت عمومی قابل دیدن است.
+۱. مالکیت
+این نرم‌افزار، کد منبع، مستندات و سایر محتوای این مخزن تحت حمایت قوانین
+حق نشر هستند و مالکیت آن‌ها متعلق به صاحب اثر است.
 
-مجاز هستید:
-  - کد را مشاهده و مطالعه کنید.
-  - افزونه را بدون تغییر روی سایت‌های خودتان نصب و استفاده کنید.
+۲. مجوز محدود در بستر GitHub
+به دلیل عمومی بودن مخزن، کاربران GitHub می‌توانند مطابق شرایط استفاده و
+قابلیت‌های پلتفرم GitHub، مخزن را مشاهده و در همان پلتفرم Fork کنند.
+این اجازه محدود فقط برای استفاده از خدمات GitHub است و هیچ مجوز اضافی
+برای استفاده از خود نرم‌افزار ایجاد نمی‌کند.
 
-بدون اجازه کتبی صاحب اثر مجاز نیستید:
-  - کد را کپی یا بازتولید کنید (کامل یا بخشی از آن).
-  - مخزن را فورک، میرور یا بازنشر کنید.
-  - کد را ویرایش، ترجمه یا اثر مشتق از آن بسازید.
-  - کد یا هر نسخه‌ای از آن را توزیع، بفروشید، اجاره دهید یا به اشتراک بگذارید.
-  - کد را در افزونه، قالب، محصول یا سرویس دیگری استفاده کنید.
-  - از کد برای آموزش مدل‌های یادگیری ماشین استفاده کنید.
+۳. محفوظ بودن سایر حقوق
+به‌جز حقوق محدود ذکرشده در بخش ۲، هیچ اجازه‌ای برای استفاده، اجرا، کپی،
+تکثیر، ویرایش، اقتباس، ترجمه، ساخت آثار مشتق، توزیع، انتشار، اعطای مجوز
+فرعی، فروش یا بهره‌برداری تجاری از تمام یا بخشی از این نرم‌افزار داده
+نمی‌شود؛ مگر با اجازه کتبی قبلی صاحب اثر.
 
-هیچ حق یا مجوزی جز موارد صریحاً ذکرشده در بالا اعطا نمی‌شود.
+بنابراین، داشتن یک Fork در GitHub به‌تنهایی مجوز استفاده، تغییر، توزیع
+یا انتشار نرم‌افزار در خارج از حقوقی که شرایط استفاده GitHub صریحاً
+اجازه داده است، محسوب نمی‌شود.
 
-ارتباط: https://t.me/Mehdibinam
+۴. سلب ضمانت
+این نرم‌افزار «همان‌گونه که هست» و بدون هیچ ضمانت صریح یا ضمنی ارائه
+می‌شود. صاحب اثر در قبال خسارت یا ادعای ناشی از استفاده از نرم‌افزار
+مسئولیتی ندارد.
+
+۵. درخواست مجوز و ارتباط
+برای دریافت مجوزهای فراتر از حقوق محدود GitHub، از این راه ارتباط بگیرید:
+https://t.me/Mehdibinam

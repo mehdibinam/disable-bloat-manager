@@ -50,7 +50,7 @@ Bloat Manager یک افزونه سبک و یکپارچه است که قابلی�
 WordPress 6.0+ ‏• PHP 7.4+
 
 ### مجوز
-این پروژه تحت **لایسنس اختصاصی «فقط مشاهده»** منتشر شده است. کپی، فورک، ویرایش و توزیع کد بدون اجازه کتبی ممنوع است. جزئیات در فایل [LICENSE](LICENSE).
+این پروژه تحت **مجوز اختصاصی (All Rights Reserved)** منتشر شده است. کاربران GitHub می‌توانند مخزن را در چارچوب شرایط GitHub مشاهده و Fork کنند؛ اما این موضوع مجوز استفاده، ویرایش، توزیع یا بهره‌برداری از کد در خارج از حقوق محدود GitHub نیست. برای سایر استفاده‌ها اجازه کتبی صاحب اثر لازم است. جزئیات در فایل [LICENSE](LICENSE).
 
 ### ارتباط
 تلگرام: [@Mehdibinam](https://t.me/Mehdibinam)
@@ -91,7 +91,7 @@ Bloat Manager is a lightweight, unified plugin that brings the features of sever
 WordPress 6.0+ • PHP 7.4+
 
 ### License
-Released under a **proprietary "view-only" license**. Copying, forking, modifying, and redistributing the code is prohibited without written permission. See [LICENSE](LICENSE).
+Released under a **proprietary license (All Rights Reserved)**. GitHub users may view and fork this repository as permitted by GitHub's Terms of Service. No additional rights to use, modify, distribute, or commercially exploit the code are granted without prior written permission. See [LICENSE](LICENSE).
 
 ### Contact
 Telegram: [@Mehdibinam](https://t.me/Mehdibinam)
