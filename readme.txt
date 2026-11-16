@@ -7,6 +7,8 @@ Requires PHP: 7.4
 Stable tag: 1.0.1
 License: Proprietary - All Rights Reserved
 
+This is a proprietary project. GitHub viewing and forking are permitted only as provided by GitHub's Terms of Service. No additional rights are granted. See LICENSE.
+
 افزونه جامع غیرفعال‌سازی بلوت وردپرس — ترکیب 9 افزونه و ایده های جدید در یک افزونه جامع و تشخیص هوشمند
 
 
