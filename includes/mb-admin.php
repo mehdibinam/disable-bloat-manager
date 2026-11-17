@@ -24,6 +24,7 @@ add_action('admin_enqueue_scripts', function ($hook) {
     $features = [];
     foreach (mb_features() as $f) {
         $f['type'] = isset($f['type']) ? $f['type'] : 'toggle';
+        if (!empty($f['options_cb'])) { $f['options'] = mb_option_choices($f); unset($f['options_cb']); }
         $f['available'] = true;
         if (!empty($f['requires']['plugin'])) {
             $f['available'] = mb_plugin_active($f['requires']['plugin']);
@@ -49,6 +50,16 @@ add_action('admin_enqueue_scripts', function ($hook) {
     ]);
 });
 
+// فهرست منوها بعد از ساخته‌شدن منو و نوار بالا، قبل از اجرای اسکریپت صفحه چاپ می‌شود
+add_action('admin_print_footer_scripts', function () {
+    if (!isset($_GET['page']) || $_GET['page'] !== MB_SLUG) return;
+    $d = [
+        'menus' => isset($GLOBALS['mb_menu_snapshot']) ? $GLOBALS['mb_menu_snapshot'] : [],
+        'bar'   => isset($GLOBALS['mb_bar_snapshot']) ? $GLOBALS['mb_bar_snapshot'] : [],
+    ];
+    echo '<script>window.mbMenus=' . wp_json_encode($d) . ';</script>';
+}, 5);
+
 function mb_render_page() {
     if (!current_user_can('manage_options')) return;
     echo '<div class="wrap mb-wrap"><div id="mb-app" class="mb-app" dir="rtl">';
@@ -65,7 +76,7 @@ function mb_ajax_guard() {
 add_action('wp_ajax_mb_save', function () {
     mb_ajax_guard();
     $key = isset($_POST['key']) ? sanitize_key(wp_unslash($_POST['key'])) : '';
-    $val = isset($_POST['value']) ? sanitize_text_field(wp_unslash($_POST['value'])) : '';
+    $val = isset($_POST['value']) ? wp_unslash($_POST['value']) : '';
     if (!mb_save_option($key, $val)) wp_send_json_error(['message' => 'گزینه‌ی نامعتبر.'], 400);
     wp_send_json_success(['values' => mb_get_options()]);
 });

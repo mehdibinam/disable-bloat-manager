@@ -62,7 +62,7 @@
 .mb-card-b{padding:14px 16px}
 
 /* ردیف امکان‌ها: فشرده */
-.mb-row{display:flex;align-items:center;gap:12px;min-height:46px;padding:7px 16px}
+.mb-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;min-height:46px;padding:7px 16px}
 .mb-card>.mb-row{border-bottom:1px solid var(--line)}
 .mb-card>.mb-row:last-child{border-bottom:0}
 .mb-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line)}
@@ -153,3 +153,22 @@
   .mb-ctl{width:100%;justify-content:flex-start}
 }
 @media (prefers-reduced-motion:reduce){.mb-switch,.mb-switch::after{transition:none}}
+
+/* فیلدهای تکمیلی */
+.mb-extra{flex:1 0 100%;padding:2px 0 8px}
+.mb-txt{height:32px;width:240px;max-width:100%;border:1px solid var(--line);border-radius:8px;background:var(--surface2);padding:0 10px}
+.mb-ta{width:100%;min-height:90px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);padding:8px 10px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.7;resize:vertical}
+.mb-presets{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px}
+.mb-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px 14px}
+.mb-chk{display:flex;align-items:center;gap:7px;cursor:pointer}
+.mb-chk input{margin:0}
+.mb-tree{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.mb-tree-g{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface2)}
+.mb-tree-g .mb-top{font-weight:700}
+.mb-tree-g .mb-sub{padding-right:20px;color:var(--muted);font-size:12.5px}
+.mb-found{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:8px}
+.mb-found-r{display:flex;align-items:center;gap:12px;padding:6px 12px;border-bottom:1px solid var(--line)}
+.mb-found-r:last-child{border-bottom:0}
+.mb-found-r span{flex:1;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;text-align:left}
+.mb-found-r small{color:var(--muted)}
+.mb-app input[type="checkbox"]{accent-color:var(--on)}

@@ -4,6 +4,7 @@
   var root = document.getElementById('mb-app');
   if (!D || !root) return;
 
+  D.menus = window.mbMenus || D.menus || {};
   var values = D.values;
   var feats = D.features;
   var byId = {};
@@ -52,7 +53,15 @@
   function isOn(f) {
     var v = values[f.id];
     if (f.type === 'select') return v !== f['default'];
+    if (f.type === 'checks' || f.type === 'tree') return Array.isArray(v) && v.length > 0;
+    if (f.type === 'text' || f.type === 'textarea') return String(v || '') !== '';
+    if (f.type === 'action') return false;
     return String(v) === '1';
+  }
+  var BIG = { select: 1, checks: 1, textarea: 1, tree: 1, action: 1, text: 1 };
+  function isWide(f) {
+    if (BIG[f.type]) return true;
+    return (f.fields || []).some(function (x) { return x.type === 'textarea' || x.type === 'checks'; });
   }
   function catOf(id) {
     var found = null;
@@ -94,7 +103,7 @@
   function save(id, val, done) {
     var prev = values[id];
     values[id] = val;
-    post('mb_save', { key: id, value: val }).then(function (d) {
+    post('mb_save', { key: id, value: Array.isArray(val) ? JSON.stringify(val) : val }).then(function (d) {
       values = d.values;
       toast('ذخیره شد');
       if (done) done(true);
@@ -148,15 +157,55 @@
     if (f.badge === 'caution') return '<span class="mb-badge caution">نیازمند بررسی</span>';
     return '';
   }
+  function checksHtml(f, id, opts) {
+    var cur = values[id] || [];
+    return '<div class="mb-checks">' + Object.keys(opts).map(function (k) {
+      return '<label class="mb-chk"><input type="checkbox" data-chk="' + id + '" value="' + esc(k) + '"' + (cur.indexOf(k) > -1 ? ' checked' : '') + '><span>' + esc(opts[k]) + '</span></label>';
+    }).join('') + '</div>';
+  }
+  function taHtml(f, fld) {
+    var id = fld.id, presets = fld.presets || [];
+    var pr = presets.length ? '<div class="mb-presets"><span class="mb-unit">افزودن سریع:</span>' + presets.map(function (p, i) {
+      return '<button type="button" class="mb-btn sm" data-preset="' + id + '" data-pi="' + i + '">' + esc(p.label) + '</button>';
+    }).join('') + '</div>' : '';
+    return pr + '<textarea class="mb-ta" dir="ltr" rows="' + (fld.rows || 5) + '" data-ta="' + id + '" placeholder="' + esc(fld.placeholder || '') + '" aria-label="' + esc(f.title) + '">' + esc(values[id] || '') + '</textarea>';
+  }
+  function treeHtml(f) {
+    var list = (D.menus && D.menus[f.source]) || [];
+    var cur = values[f.id] || [];
+    if (!list.length) return '<div class="mb-empty">فهرستی پیدا نشد. یک بار این صفحه را دوباره باز کنید.</div>';
+    return '<div class="mb-tree" data-tree="' + f.id + '">' + list.map(function (m) {
+      var kids = (m.children || []).map(function (c) {
+        return '<label class="mb-chk mb-sub"><input type="checkbox" data-tchk="' + f.id + '" value="' + esc(c.key) + '"' + (cur.indexOf(c.key) > -1 ? ' checked' : '') + '><span>' + esc(c.title) + '</span></label>';
+      }).join('');
+      return '<div class="mb-tree-g"><label class="mb-chk mb-top"><input type="checkbox" data-tchk="' + f.id + '" value="' + esc(m.key) + '"' + (cur.indexOf(m.key) > -1 ? ' checked' : '') + '><span>' + esc(m.title) + '</span></label>' + kids + '</div>';
+    }).join('') + '</div>';
+  }
   function fieldHtml(f, fld) {
     var hidden = fld.show_if && values[fld.show_if[0]] !== fld.show_if[1];
     var show = f.type === 'toggle' ? isOn(f) : true;
-    return '<label class="mb-field" data-field="' + fld.id + '"' + ((hidden || !show) ? ' hidden' : '') + '>' +
+    var h = (hidden || !show) ? ' hidden' : '';
+    if (fld.type === 'text') {
+      return '<label class="mb-field" data-field="' + fld.id + '"' + h + '><input class="mb-txt" type="text" value="' + esc(values[fld.id] || '') + '" placeholder="' + esc(fld.placeholder || '') + '" data-txt="' + fld.id + '" aria-label="' + esc(f.title) + '"></label>';
+    }
+    return '<label class="mb-field" data-field="' + fld.id + '"' + h + '>' +
       '<input class="mb-num" type="number" min="' + fld.min + '" max="' + fld.max + '" value="' + esc(values[fld.id]) + '" data-num="' + fld.id + '" aria-label="' + esc(f.title) + '">' +
       '<span class="mb-unit">' + esc(fld.unit || '') + '</span></label>';
   }
+  function extraHtml(f) {
+    var out = '';
+    if (f.type === 'checks') out += checksHtml(f, f.id, f.options || {});
+    if (f.type === 'textarea') out += taHtml(f, f);
+    if (f.type === 'tree') out += treeHtml(f);
+    if (f.type === 'action') out += '<div class="mb-act-res" data-res="' + f.id + '"></div>';
+    (f.fields || []).forEach(function (fld) {
+      if (fld.type === 'textarea' && (f.type !== 'toggle' || isOn(f))) out += taHtml(f, fld);
+      if (fld.type === 'checks' && (f.type !== 'toggle' || isOn(f))) out += checksHtml(f, fld.id, fld.options || {});
+    });
+    return out ? '<div class="mb-extra">' + out + '</div>' : '';
+  }
   function rowHtml(f, showCat) {
-    var wide = f.type === 'select';
+    var wide = isWide(f);
     var disabled = f.available === false;
     var ctl = '';
     if (f.type === 'select') {
@@ -164,21 +213,27 @@
         return '<option value="' + esc(k) + '"' + (values[f.id] === k ? ' selected' : '') + '>' + esc(f.options[k]) + '</option>';
       }).join('');
       ctl += '<select class="mb-sel" data-sel="' + f.id + '" aria-label="' + esc(f.title) + '"' + (disabled ? ' disabled' : '') + '>' + opts + '</select>';
+    } else if (f.type === 'text') {
+      ctl += '<input class="mb-txt" type="text" value="' + esc(values[f.id] || '') + '" placeholder="' + esc(f.placeholder || '') + '" data-txt="' + f.id + '" aria-label="' + esc(f.title) + '"' + (disabled ? ' disabled' : '') + '>';
+    } else if (f.type === 'action') {
+      ctl += '<button type="button" class="mb-btn primary sm" data-act="' + f.id + '"' + (disabled ? ' disabled' : '') + '>' + esc(f.button || 'اجرا') + '</button>';
+    } else if (f.type === 'checks' || f.type === 'textarea' || f.type === 'tree') {
+      ctl += '';
     } else {
       ctl += '<button type="button" class="mb-switch" role="switch" aria-checked="' + (isOn(f) ? 'true' : 'false') + '" data-sw="' + f.id + '" aria-label="' + esc(f.title) + '"' + (disabled ? ' disabled' : '') + '></button>';
     }
-    (f.fields || []).forEach(function (fld) { ctl = fieldHtml(f, fld) + ctl; });
+    (f.fields || []).forEach(function (fld) { if (fld.type === 'number' || fld.type === 'text') ctl = fieldHtml(f, fld) + ctl; });
     var req = disabled ? '<span class="mb-req">نیازمند ' + esc(f.requires.label) + '</span>' : '';
     var cat = showCat ? '<span class="mb-res-c">' + esc((catOf(f.cat) || {}).title || '') + '</span>' : '';
     return '<div class="mb-row' + (wide ? ' mb-wide' : '') + (disabled ? ' is-off-plugin' : '') + '" data-row="' + f.id + '">' +
       '<div class="mb-row-t"><span class="mb-title">' + esc(f.title) + '</span>' + badgeHtml(f) + tipHtml(f) + req + cat + '</div>' +
-      '<div class="mb-ctl">' + ctl + '</div></div>';
+      '<div class="mb-ctl">' + ctl + '</div>' + extraHtml(f) + '</div>';
   }
 
   function rowsHtml(items, showCat) {
     var out = '', col = 0;
     items.forEach(function (f) {
-      var wide = f.type === 'select';
+      var wide = isWide(f);
       if (wide && col === 1) { out += '<div class="mb-row mb-fill"></div>'; col = 0; }
       out += rowHtml(f, showCat);
       col = wide ? 0 : (col + 1) % 2;
@@ -331,6 +386,34 @@
       var next = isOn(f) ? 0 : 1;
       return changeFeature(f, next);
     }
+    if (t.hasAttribute('data-preset')) {
+      var pid = t.getAttribute('data-preset');
+      var pf = null;
+      feats.forEach(function (x) { if (x.id === pid) pf = x; (x.fields || []).forEach(function (fl) { if (fl.id === pid) pf = fl; }); });
+      var cur = String(values[pid] || '').split('\n').filter(Boolean);
+      pf.presets[+t.getAttribute('data-pi')].items.forEach(function (h) { if (cur.indexOf(h) < 0) cur.push(h); });
+      return save(pid, cur.join('\n'), function () { render(); });
+    }
+    if (t.hasAttribute('data-act')) {
+      var af = byId[t.getAttribute('data-act')];
+      var box = root.querySelector('[data-res="' + af.id + '"]');
+      t.disabled = true;
+      box.innerHTML = '<div class="mb-empty">در حال بررسی... ممکن است چند دقیقه طول بکشد.</div>';
+      return post(af.action).then(function (d) {
+        t.disabled = false;
+        var items = d.items || [];
+        box.innerHTML = items.length ? '<div class="mb-found">' + items.map(function (it) {
+          return '<div class="mb-found-r"><span dir="ltr">' + esc(it.host) + '</span><small>' + fa(it.count) + ' بار</small><button type="button" class="mb-btn sm" data-add="' + esc(it.host) + '" data-to="' + af.target + '">افزودن به فهرست مسدود</button></div>';
+        }).join('') + '</div>' : '<div class="mb-empty">دامنه‌ی خارجیِ تازه‌ای پیدا نشد.</div>';
+      }).catch(function () { t.disabled = false; box.innerHTML = '<div class="mb-empty">بررسی انجام نشد. دوباره تلاش کنید.</div>'; });
+    }
+    if (t.hasAttribute('data-add')) {
+      var to = t.getAttribute('data-to');
+      var lst = String(values[to] || '').split('\n').filter(Boolean);
+      var hh = t.getAttribute('data-add');
+      if (lst.indexOf(hh) < 0) lst.push(hh);
+      return save(to, lst.join('\n'), function () { t.closest('.mb-found-r').remove(); var ta = root.querySelector('[data-ta="' + to + '"]'); if (ta) ta.value = lst.join('\n'); });
+    }
     if (t.hasAttribute('data-off')) {
       return save(t.getAttribute('data-off'), 0, function () { render(); });
     }
@@ -350,6 +433,24 @@
 
   root.addEventListener('change', function (e) {
     var el = e.target;
+    if (el.hasAttribute('data-chk')) {
+      var cid = el.getAttribute('data-chk');
+      var arr = [].slice.call(root.querySelectorAll('[data-chk="' + cid + '"]:checked')).map(function (x) { return x.value; });
+      var cf = byId[cid];
+      var was = (values[cid] || []).length > 0;
+      if (cf && !was && arr.length && warnings(cf).length) {
+        el.checked = false;
+        return confirmBox('قبل از فعال‌سازی', warnings(cf), 'متوجه شدم، فعال شود', function () { save(cid, arr, function () { render(); }); });
+      }
+      return save(cid, arr);
+    }
+    if (el.hasAttribute('data-tchk')) {
+      var tid = el.getAttribute('data-tchk');
+      var t = [].slice.call(root.querySelectorAll('[data-tchk="' + tid + '"]:checked')).map(function (x) { return x.value; });
+      return save(tid, t);
+    }
+    if (el.hasAttribute('data-txt')) return save(el.getAttribute('data-txt'), el.value);
+    if (el.hasAttribute('data-ta')) return save(el.getAttribute('data-ta'), el.value, function () { render(); });
     if (el.hasAttribute('data-sel')) {
       var f = byId[el.getAttribute('data-sel')];
       var prev = values[f.id];

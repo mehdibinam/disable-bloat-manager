@@ -232,5 +232,7 @@ function mb_apply_features() {
     if ($on('pdf_thumbnails')) {
         add_filter('fallback_intermediate_image_sizes', '__return_empty_array');
     }
+
+    mb_apply_more($o, $on);
 }
 add_action('plugins_loaded', 'mb_apply_features', 1);

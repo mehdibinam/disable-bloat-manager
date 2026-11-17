@@ -1,26 +1,46 @@
-=== Bloat Manager ===
+=== Disable Bloat Manager ===
 Contributors: Mehdibinam
-Tags: performance, disable, bloat, woocommerce, optimization
+Tags: performance, disable, bloat, woocommerce, optimization, security, firewall
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.1
-License: Proprietary - All Rights Reserved
+Stable tag: 2.0.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
-This is a proprietary project. GitHub viewing and forking are permitted only as provided by GitHub's Terms of Service. No additional rights are granted. See LICENSE.
+افزونه جامع غیرفعالسازی بلوت وردپرس و ووکامرس همراه با امنیت، فایروال و مسدودسازی دامنهها.
 
-افزونه جامع غیرفعال‌سازی بلوت وردپرس — ترکیب 9 افزونه و ایده های جدید در یک افزونه جامع و تشخیص هوشمند
+== Description ==
 
+Disable Bloat Manager (پیشتر Bloat Manager) ترکیبی از قابلیتهای چندین افزونه بهینهسازی محبوب (Perfmatters، Disable Admin Notices، Featherweight، Disable Bloat for WP & Woo و ...) در یک رابط مدرن است.
 
-bad domain blocker, bloatoff utils, disable admin notices, Disable Bloat for WP & Woo Pro, disable everything, Featherweight, ghateino, perfmatters, wp widget disable
+نسخه ۲٫۰ شامل موارد جدید زیر است:
 
-شامل غیرفعال‌سازی AI وردپرس/المنتور/رنک‌مث/یواست/جت‌پک و حذف پیشنهاد نصب افزونه‌ها و تگ‌های محبوب.
+* **امنیت و فایروال:** سختسازی وردپرس، هدرهای امنیتی و HSTS، محدودکردن تلاش ورود، آدرس سفارشی صفحه ورود، بررسی الگوهای حمله، بارگذاری فایلها، اسکنرها، متدها و نرخ درخواست، لیستهای IP و مسیرهای مستثنا.
+* **مسدودسازی دامنهها:** فهرست سیاه/سفید، اسکن سایت، حذف فایلهای خارجی، مسدودکردن fetch/XHR، قطع تله متری و بررسی بهروزرسانی.
+* **مخفیسازی منوها:** پنهان کردن منوها و موارد نوار بالا با تشخیص خودکار افزونهها.
+* **فونتهای گوگل:** حذف، میزبانی محلی، font-display: swap و بارگذاری ناهمگام Font Awesome.
+* گزینههای تکمیلی دیدگاهها، ابزارکها، پیشخوان، بهروزرسانیها و ووکامرس.
+
+تمام گزینهها بهصورت پیشفرض خاموشاند و دکمه «تنظیمات پیشنهادی» گزینههای ایمن را یکجا روشن میکند.
 
 == Installation ==
-1. پوشه bloat-manager را در wp-content/plugins آپلود کنید
-2. افزونه را فعال کنید
-3. به تنظیمات > Bloat Manager بروید
+
+1. پوشه `disable-bloat-manager` را در `wp-content/plugins/` قرار دهید (یا فایل zip را از بخش Releases آپلود کنید).
+2. افزونه را فعال کنید.
+3. به منوی **Disable Bloat** بروید و گزینههای دلخواه را روشن کنید.
 
 == Changelog ==
+
+= 2.0.0 =
+* اضافه شدن ماژول امنیت و فایروال (سختسازی، هدرها، محافظت از ورود، فایروال، لیستهای IP).
+* اضافه شدن مسدودسازی دامنهها (فهرست سیاه/سفید، اسکن سایت، قطع تله متری).
+* اضافه شدن مخفیسازی منوها و نوار بالا.
+* اضافه شدن کنترل فونتهای گوگل و گزینههای تکمیلی دیدگاهها، ابزارکها و پیشخوان.
+* تغییر مجوز به GPLv2 or later.
+
+= 1.0.1 =
+* انتشار اولیه — ۸۰+ گزینه یکتا.
+
 = 1.0.0 =
-* انتشار اولیه - 80+ گزینه یکتا
+* انتشار نخست.
