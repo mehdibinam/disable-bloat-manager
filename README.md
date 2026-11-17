@@ -18,7 +18,8 @@
 
 ### ایدهٔ اولیه
 ایدهٔ اولیهٔ این پروژه با الهام از افزونه های زیر شکل گرفت:
-[Bad Domain Blocker](https://shetabwp.com/bad-domain-blocker/), Bloatoff Utils, Disable Admin Notices, [Disable Bloat Pro](), Disable everything, [Featherweight](https://wordpress.org/plugins/wp-disable/), [ghateino](https://github.com/shokrino/ghateino), [Perfmatters](https://perfmatters.io/), wp widget disable.
+
+[Bad Domain Blocker](https://shetabwp.com/bad-domain-blocker/), Bloatoff Utils, Disable Admin Notices, [Disable Bloat Pro](https://disablebloat.com/), Disable everything, [Featherweight](https://wordpress.org/plugins/wp-disable/), [ghateino](https://github.com/shokrino/ghateino), [Perfmatters](https://perfmatters.io/), wp widget disable.
 
 ### مزیت اصلی
 - **کاهش تعداد درخواستها و حجم صفحه:** فقط امکانهایی که خودتان روشن میکنید اجرا میشوند و هیچ کد اضافهای بارگذاری نمیشود.
