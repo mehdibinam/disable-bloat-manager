@@ -1,6 +1,6 @@
 # مدیریت کارایی وردپرس · WordPress Performance Manager
 
-<p align="center"><b>نسخه / Version 2.1.0</b> · وردپرس ۶٫۰+ · PHP ۷٫۴+ </p>
+<p align="center"><b>نسخه 2.1</b> · وردپرس 6 + · PHP 7.4+ </p>
 
 [فارسی](#فارسی) · [English](#english)
 
@@ -68,7 +68,7 @@
 
 ### Installation
 1. Download the [latest release (`disable-bloat-manager-v2.1.zip`)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest), then upload it at **Plugins → Add New → Upload Plugin** and activate it.
-2. Open the **مدیریت کارایی** menu (or the "تنظیمات" link on the Plugins page).
+2. Open the **DeBloat** menu (or the "Setting" link on the Plugins page).
 3. On the **Overview** page click "Recommended settings" to enable the low-risk options, then review each section.
 
 > **Important:** test on a staging site and keep a backup first. Options marked "needs review" can change your site's look or behavior.
