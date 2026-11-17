@@ -20,7 +20,7 @@
 ## 🇮🇷 فارسی
 
 ### معرفی
-Disable Bloat Manager (که پیشتر با نام Bloat Manager شناخته میشد) یک افزونه سبک و یکپارچه است که قابلیتهای چندین افزونه محبوب بهینهسازی (Perfmatters، Disable Admin Notices، Featherweight، Disable Bloat for WP & Woo و ...) را در یک رابط مدرن با تبها و تولتیپ ارائه میدهد.
+افزونه Disable Bloat Manager یک پلاگین سبک و یکپارچه است که قابلیتهای چندین افزونه محبوب بهینهسازی (Perfmatters، Disable Admin Notices، Featherweight، Disable Bloat for WP & Woo و ...) را در یک رابط مدرن با تبها و تولتیپ ارائه میدهد.
 
 **نسخه ۲٫۰** سه بخش کاملاً جدید اضافه کرده است: **امنیت و فایروال**، **مسدودسازی دامنهها** و **مخفیسازی منوها**؛ به همراه کنترل فونتهای گوگل و گزینههای تکمیلی برای دیدگاهها، ابزارکها، پیشخوان و بهروزرسانیها. با بیش از ۱۵۰ گزینه، هم سرعت سایت را بالا میبرد و هم سطح امنیت آن را بهبود میبخشد.
 
@@ -43,7 +43,7 @@ Disable Bloat Manager (که پیشتر با نام Bloat Manager شناخته م
 | **مخفیسازی منوها** ⭐ | مخفی کردن منوها و زیرمنوهای پیشخوان و موارد نوار بالا، با تشخیص خودکار افزونههای تازهنصبشده |
 
 ### نصب
-1. فایل [`disable-bloat-manager.cld.v2.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest) را از بخش Release دانلود کنید.
+1. فایل [`disable-bloat-manager-v2.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest) را از بخش Release دانلود کنید.
 2. پوشه `disable-bloat-manager` را در مسیر `wp-content/plugins/` قرار دهید (یا فایل zip را مستقیماً از «افزونهها ← بارگذاری افزونه» آپلود کنید).
 3. افزونه را از بخش «افزونهها» فعال کنید.
 4. به **منوی Disable Bloat** بروید و گزینههای دلخواه را روشن کنید.
@@ -63,15 +63,12 @@ WordPress 6.0+ ‏• PHP 7.4+
 ### مجوز
 این پروژه تحت مجوز **GNU General Public License v2 or later (GPLv2+)** منتشر شده است. استفاده، ویرایش و توزیع طبق شرایط مجوز GPL آزاد است. جزئیات کامل در فایل [LICENSE](LICENSE).
 
-### ارتباط
-تلگرام: [@Mehdibinam](https://t.me/Mehdibinam)
-
 ---
 
 ## 🇬🇧 English
 
 ### About
-Disable Bloat Manager (formerly known as Bloat Manager) is a lightweight, unified plugin that brings the features of several popular optimization plugins (Perfmatters, Disable Admin Notices, Featherweight, Disable Bloat for WP & Woo, and more) into one modern interface with AJAX tabs and tooltips.
+Disable Bloat Manager is a lightweight, unified plugin that brings the features of several popular optimization plugins (Perfmatters, Disable Admin Notices, Featherweight, Disable Bloat for WP & Woo, and more) into one modern interface with AJAX tabs and tooltips.
 
 **Version 2.0** adds three brand-new sections — **Security & Firewall**, **Domain Blocking**, and **Menu Hiding** — plus Google Fonts controls and extra options for comments, widgets, admin, and updates. With 150+ options it boosts both performance and security.
 
@@ -94,7 +91,7 @@ Disable Bloat Manager (formerly known as Bloat Manager) is a lightweight, unifie
 | **Menu Hiding** ⭐ | Hide admin sidebar menus/submenus and admin bar items, with auto-detection of newly installed plugins |
 
 ### Installation
-1. Download [`disable-bloat-manager.cld.v2.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest) from the Releases section.
+1. Download [`disable-bloat-manager-v2.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest) from the Releases section.
 2. Place the `disable-bloat-manager` folder in `wp-content/plugins/` (or upload the zip directly via **Plugins → Add New → Upload Plugin**).
 3. Activate it from the **Plugins** screen.
 4. Open the **Disable Bloat** menu and enable the options you want.
@@ -113,6 +110,3 @@ WordPress 6.0+ • PHP 7.4+
 
 ### License
 Released under the **GNU General Public License v2 or later (GPLv2+)**. You are free to use, modify and distribute it under the terms of the GPL. See [LICENSE](LICENSE).
-
-### Contact
-Telegram: [@Mehdibinam](https://t.me/Mehdibinam)
