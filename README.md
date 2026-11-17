@@ -17,7 +17,8 @@
 **مدیریت کارایی وردپرس** مجموعه‌ای دسته‌بندی‌شده برای خاموش‌کردن بخش‌های اضافه‌ی وردپرس، ووکامرس و افزونه‌هاست؛ همراه با ابزارهای امنیت و کنترل ارتباط سایت با دامنه‌های بیرونی. هر امکان یک راهنمای ساده دارد (با رفتن روی علامت «؟») و رابط کاملاً فارسی و راست‌به‌چپ است.
 
 ### ایدهٔ اولیه
-ایدهٔ اولیهٔ این پروژه با الهام از افزونههای زیر شکل گرفت: bad domain blocker, bloatoff utils, disable admin notices, Disable Bloat for WP & Woo Pro, disable everything, Featherweight, [ghateino](https://github.com/shokrino/ghateino), perfmatters, wp widget disable.
+ایدهٔ اولیهٔ این پروژه با الهام از افزونه های زیر شکل گرفت:
+[Bad Domain Blocker](https://shetabwp.com/bad-domain-blocker/), Bloatoff Utils, Disable Admin Notices, [Disable Bloat Pro](), Disable everything, [Featherweight](https://wordpress.org/plugins/wp-disable/), [ghateino](https://github.com/shokrino/ghateino), [Perfmatters](https://perfmatters.io/), wp widget disable.
 
 ### مزیت اصلی
 - **کاهش تعداد درخواستها و حجم صفحه:** فقط امکانهایی که خودتان روشن میکنید اجرا میشوند و هیچ کد اضافهای بارگذاری نمیشود.
