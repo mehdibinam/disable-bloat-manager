@@ -1,9 +1,9 @@
-# مدیریت کارایی وردپرس · WordPress Performance Manager
+#Disable Bloat Manager
+# مدیریت کارایی وردپرس | WP Performance Manager
 
 <p align="center"><b>نسخه 2.1</b> · وردپرس 6 + · PHP 7.4+ </p>
 
 [فارسی](#فارسی) · [English](#english)
-
 ---
 
 <a id="فارسی"></a>
