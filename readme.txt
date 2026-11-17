@@ -23,7 +23,11 @@ License URI: https://github.com/mehdibinam/disable-bloat-manager/blob/main/LICEN
 * **مخفیسازی منوها:** پنهان کردن منوها و موارد نوار بالا با تشخیص خودکار افزونههای جدید.
 * **سایر بخشها:** سمت بازدیدکننده، دیدگاهها، پیشخوان، ویرایشگر بلوک، ابزارکها، بهروزرسانیها، ووکامرس، فونتهای گوگل و هوش مصنوعی.
 
-فهرست کامل امکانات در [docs/FEATURES.md](docs/FEATURES.md) موجود است.
+ایدهٔ اولیهٔ این پروژه با الهام از افزونههای زیر شکل گرفت: bad domain blocker, bloatoff utils, disable admin notices, Disable Bloat for WP & Woo Pro, disable everything, Featherweight, ghateino (https://github.com/shokrino/ghateino), perfmatters, wp widget disable.
+
+مزیت اصلی: فقط امکانهای انتخابی اجرا میشوند، تماسهای بیرونی کاهش مییابد، وابستگی به CDN کمتر میشود و عیبزدایی با تولتیپها و هشدارهای تداخل سادهتر است.
+
+فهرست کامل امکانات: [فارسی](docs/FEATURES-Fa.md) · [English](docs/FEATURES-En.md).
 
 تمام گزینهها بهصورت پیشفرض خاموشاند و دکمه «تنظیمات پیشنهادی» گزینههای ایمن را یکجا روشن میکند.
 
@@ -39,7 +43,7 @@ License URI: https://github.com/mehdibinam/disable-bloat-manager/blob/main/LICEN
 = 2.1.0 =
 * تغییر نام افزونه به «مدیریت کارایی وردپرس» و بازنویسی رابط کاربری (جستجو، فعال/غیرفعالکردن همه، حالت تیره/روشن، هشدار تداخل).
 * اضافه شدن یادگیری خودکار دامنههای خارجی و ماژول تشخیص همپوشانی با سایر افزونهها (mb-external).
-* اضافه شدن مستندات کامل ۱۶۱ امکان (docs/FEATURES.md).
+* اضافه شدن مستندات کامل ۱۶۱ امکان (docs/FEATURES-Fa.md و docs/FEATURES-En.md).
 * تغییر مجوز به «MB Source-Available License v1.0» — کد قابل مطالعه، اما کپی، فورک و توزیع مجاز نیست.
 
 = 2.0.0 =

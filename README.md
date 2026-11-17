@@ -16,6 +16,29 @@
 
 **مدیریت کارایی وردپرس** مجموعه‌ای دسته‌بندی‌شده برای خاموش‌کردن بخش‌های اضافه‌ی وردپرس، ووکامرس و افزونه‌هاست؛ همراه با ابزارهای امنیت و کنترل ارتباط سایت با دامنه‌های بیرونی. هر امکان یک راهنمای ساده دارد (با رفتن روی علامت «؟») و رابط کاملاً فارسی و راست‌به‌چپ است.
 
+### ایدهٔ اولیه
+ایدهٔ اولیهٔ این پروژه با الهام از افزونههای زیر شکل گرفت: bad domain blocker, bloatoff utils, disable admin notices, Disable Bloat for WP & Woo Pro, disable everything, Featherweight, [ghateino](https://github.com/shokrino/ghateino), perfmatters, wp widget disable.
+
+### مزیت اصلی
+- **کاهش تعداد درخواستها و حجم صفحه:** فقط امکانهایی که خودتان روشن میکنید اجرا میشوند و هیچ کد اضافهای بارگذاری نمیشود.
+- **رفتار قابلپیشبینیتر سایت:** با قطع تماسهای بیرونی (فونتهای گوگل، Mixpanel، تله متری وردپرس) صفحه کمتر منتظر سرویسهای خارجی میماند.
+- **وابستگی کمتر به CDN و سرویسهای خارجی:** در شرایط اینترنت ناپایدار یا محدود، سایت باز هم کار میکند.
+- **عیبزدایی سادهتر:** تولتیپ هر امکان، هشدار تداخل با سایر افزونهها و پیام هشدار قبل از تغییرات حساس.
+
+### رویکرد
+همهچیز بهصورت پیشفرض خاموش است (Minimal by default)؛ شما تعیین میکنید چه چیزی اجرا شود. امکانهای حساس قبل از فعالسازی هشدار میدهند و هیچ تغییری بهصورت خودکار در سایت اعمال نمیشود.
+
+### سناریوهای پیشنهادی
+- **عمومی (ایمن):** دکمه «تنظیمات پیشنهادی» را بزنید تا امکانهای کمخطر روشن شوند.
+- **اینترنت محدود:** حالت «فهرست سفید» دامنهها را انتخاب و دامنههای ضروری (درگاه پرداخت، پیامک، نقشه) را وارد کنید.
+- **عیبزدایی:** هشدارهای تداخل را بررسی کنید، یادگیری دامنهها را موقتاً خاموش و در صورت لزوم از «بازنشانی» استفاده کنید.
+
+### نکات سازگاری
+- گزینههایی مثل «آدرس ورود سفارشی»، HSTS و فایروال را اول روی سایت آزمایشی امتحان کنید.
+- اگر فرمها از REST API استفاده میکنند، نامفضای آنها را در فیلد «نامفضاهای عمومی REST» وارد کنید.
+- اگر نقشهای گوگل در سایت دارید، «غیرفعالسازی گوگل مپ» را روشن نکنید یا صفحهی آن را در استثناها بنویسید.
+- در صورت قفلشدن پیشخوان، پوشهی افزونه را موقتاً تغییر نام دهید یا خط `MB_DISABLE_LOGIN_URL` را به `wp-config.php` اضافه کنید.
+
 ### نصب
 ۱. آخرین نسخه ([`disable-bloat-manager-v2.1.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)) را دانلود و از بخش **افزونه‌ها ← افزودن ← بارگذاری افزونه** نصب و فعال کنید.
 ۲. از منوی **مدیریت کارایی** یا لینک «تنظیمات» کنار نام افزونه در صفحه‌ی افزونه‌ها وارد شوید.
@@ -47,7 +70,7 @@
 | مسدودسازی دامنه‌ها | فهرست سیاه یا سفید دامنه، یادگیری خودکار دامنه‌های خارجی و قطع درخواست‌های کندکننده |
 | مخفی‌سازی منوها | مخفی‌کردن منوها و زیرمنوهای پیشخوان و نوار بالا با تشخیص خودکار افزونه‌های جدید |
 
-فهرست کامل (۱۶۱ امکان) با توضیح هر کدام: **[docs/FEATURES.md](docs/FEATURES.md)**
+فهرست کامل (۱۶۱ امکان) با توضیح هر کدام: **[docs/FEATURES-Fa.md](docs/FEATURES-Fa.md)**
 
 ### پرسش‌های متداول
 - **افزونه سایتم را کند نمی‌کند؟** خیر؛ فقط تنظیمات انتخابی اجرا می‌شود. «یادگیری دامنه‌ها» فقط از بخش کوچکی از بازدیدها نمونه می‌گیرد.
@@ -66,6 +89,29 @@
 ## English
 
 **WordPress Performance Manager** (Persian UI, RTL) is a categorized toolbox for switching off unnecessary parts of WordPress, WooCommerce and popular plugins, plus security hardening and control over which external domains your site talks to. Every option has a short plain-language tooltip (hover the "?" icon).
+
+### Initial inspiration
+The initial idea for this project was inspired by these plugins: bad domain blocker, bloatoff utils, disable admin notices, Disable Bloat for WP & Woo Pro, disable everything, Featherweight, [ghateino](https://github.com/shokrino/ghateino), perfmatters, wp widget disable.
+
+### Key advantage
+- **Fewer requests and a lighter page:** only the options you switch on run — no extra code is loaded.
+- **More predictable behavior:** by cutting external calls (Google Fonts, Mixpanel, WordPress telemetry) pages spend less time waiting on third-party services.
+- **Less dependency on CDNs and external services:** on unstable or restricted connections, the site keeps working.
+- **Easier troubleshooting:** every option has a tooltip, overlap warnings flag conflicting plugins, and risky changes show a confirmation warning.
+
+### Approach
+Everything is off by default (minimal by default) — you decide what runs. Sensitive options warn before enabling, and nothing changes on your site automatically.
+
+### Recommended scenarios
+- **General (safe):** click "Recommended settings" to enable the low-risk options.
+- **Restricted internet:** switch domain control to "Whitelist" mode and add essential domains (payment gateways, SMS, maps).
+- **Troubleshooting:** check overlap warnings, temporarily turn off domain learning, and use Reset if needed.
+
+### Compatibility notes
+- Test options like the custom login URL, HSTS and the firewall on a staging site first.
+- If your forms use the REST API, add their namespaces to the "Public REST namespaces" field.
+- If your site uses Google Maps, don't enable "Disable Google Maps" or add that page to the exclusions.
+- If you get locked out of the dashboard, temporarily rename the plugin folder or add `MB_DISABLE_LOGIN_URL` to `wp-config.php`.
 
 ### Installation
 1. Download the [latest release (`disable-bloat-manager-v2.1.zip`)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest), then upload it at **Plugins → Add New → Upload Plugin** and activate it.
@@ -92,7 +138,7 @@
 - **Domain blocking:** blacklist or whitelist mode, automatic domain learning from normal visits (sampled, light on the server), runtime blocking in the browser, telemetry/update-check blocking, request timeout cap.
 - **Menu hiding:** hide admin menus/submenus and admin-bar items; newly installed plugins appear automatically.
 
-Full Persian feature list: **[docs/FEATURES.md](docs/FEATURES.md)**.
+Full English feature list: **[docs/FEATURES-En.md](docs/FEATURES-En.md)**.
 
 ### FAQ
 - **Will it slow my site?** No. Only the options you switch on run. Domain learning samples a small share of page views.
