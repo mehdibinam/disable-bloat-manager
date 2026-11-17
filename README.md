@@ -1,6 +1,6 @@
 # مدیریت کارایی وردپرس · WordPress Performance Manager
 
-<p align="center"><b>نسخه / Version 2.1.0</b> · وردپرس ۶٫۰+ · PHP ۷٫۴+ · مجوز: <a href="LICENSE">کد در دسترس، بدون اجازه‌ی کپی و فورک</a></p>
+<p align="center"><b>نسخه / Version 2.1.0</b> · وردپرس ۶٫۰+ · PHP ۷٫۴+ </p>
 
 [فارسی](#فارسی) · [English](#english)
 
