@@ -1,5 +1,16 @@
 # Disable Bloat Manager
 ## مدیریت کارایی وردپرس | WP Performance Manager
+
+<div align="center">
+
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b)
+![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4)
+![License](https://img.shields.io/badge/license-Source--Available-orange)
+[![Download](https://img.shields.io/badge/download-v2.1.0-brightgreen)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)
+
+</div>
+
 ---
 
 <div dir="rtl">
