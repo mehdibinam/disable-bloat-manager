@@ -3,12 +3,16 @@
   var D = window.mbData;
   var root = document.getElementById('mb-app');
   if (!D || !root) return;
-
   D.menus = window.mbMenus || D.menus || {};
+
   var values = D.values;
   var feats = D.features;
   var byId = {};
   feats.forEach(function (f) { byId[f.id] = f; });
+  var route = 'overview';
+  var query = '';
+  var ddOpen = {};
+
   var layer = document.createElement('div');
   layer.className = 'mb-layer';
   var tipbox = document.createElement('div');
@@ -16,8 +20,6 @@
   tipbox.setAttribute('role', 'tooltip');
   tipbox.hidden = true;
   layer.appendChild(tipbox);
-  var route = 'overview';
-  var query = '';
 
   /* ───── ابزارها ───── */
   var ICONS = {
@@ -25,6 +27,9 @@
     eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
     message: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
     layout: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
+    edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+    widgets: '<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/>',
+    refresh: '<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12A9 9 0 0 1 18.5 5.8L21 8"/><path d="M21 3v5h-5M3 21v-5h5"/>',
     cart: '<circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 7H6"/>',
     puzzle: '<path d="M10 3h4v3a2 2 0 1 0 4 0V3h3v7h-3a2 2 0 1 0 0 4h3v7H3V3z"/>',
     sparkles: '<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
@@ -39,11 +44,12 @@
     alert: '<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/>',
     reset: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
     wand: '<path d="M15 4l5 5L9 20l-5-5z"/><path d="M13 6l5 5"/>',
+    chevron: '<path d="M6 9l6 6 6-6"/>',
+    star: '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.2 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/>',
+    chat: '<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.6-.8L3 21l1.9-5.1A8.4 8.4 0 1 1 21 11.5z"/>',
     shieldlogo: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'
   };
-  function icon(n) {
-    return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[n] || '') + '</svg>';
-  }
+  function icon(n) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[n] || '') + '</svg>'; }
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -55,24 +61,21 @@
     if (f.type === 'select') return v !== f['default'];
     if (f.type === 'checks' || f.type === 'tree') return Array.isArray(v) && v.length > 0;
     if (f.type === 'text' || f.type === 'textarea') return String(v || '') !== '';
-    if (f.type === 'action') return false;
+    if (f.type === 'learned') return false;
     return String(v) === '1';
   }
-  var BIG = { select: 1, checks: 1, textarea: 1, tree: 1, action: 1, text: 1 };
-  function isWide(f) {
-    if (BIG[f.type]) return true;
-    return (f.fields || []).some(function (x) { return x.type === 'textarea' || x.type === 'checks'; });
-  }
+  function isWide(f) { return f.type === 'tree'; }
   function catOf(id) {
     var found = null;
     D.groups.forEach(function (g) { g.items.forEach(function (c) { if (c.id === id) found = c; }); });
     return found;
   }
-  function activeIn(cat) {
-    return feats.filter(function (f) { return f.cat === cat && isOn(f); }).length;
-  }
-  function totalIn(cat) {
-    return feats.filter(function (f) { return f.cat === cat; }).length;
+  function activeIn(cat) { return feats.filter(function (f) { return f.cat === cat && isOn(f); }).length; }
+  function totalIn(cat) { return feats.filter(function (f) { return f.cat === cat; }).length; }
+  function findDef(id) {
+    var r = null;
+    feats.forEach(function (x) { if (x.id === id) r = x; (x.fields || []).forEach(function (fl) { if (fl.id === id) r = fl; }); });
+    return r;
   }
 
   /* ───── ارتباط با سرور ───── */
@@ -83,10 +86,7 @@
     Object.keys(extra || {}).forEach(function (k) { fd.append(k, extra[k]); });
     return fetch(D.ajax, { method: 'POST', credentials: 'same-origin', body: fd })
       .then(function (r) { return r.json(); })
-      .then(function (j) {
-        if (!j || !j.success) throw new Error('fail');
-        return j.data;
-      });
+      .then(function (j) { if (!j || !j.success) throw new Error('fail'); return j.data; });
   }
   var toastTimer;
   function toast(msg, err) {
@@ -120,7 +120,7 @@
   function confirmBox(title, lines, okText, onOk, danger) {
     var bg = document.createElement('div');
     bg.className = 'mb-modal-bg';
-    var items = lines.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('');
+    var items = lines.filter(Boolean).map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('');
     bg.innerHTML = '<div class="mb-modal" role="dialog" aria-modal="true" aria-label="' + esc(title) + '">' +
       '<h3>' + icon('alert') + esc(title) + '</h3><ul>' + items + '</ul>' +
       '<div class="mb-modal-f"><button class="mb-btn ' + (danger ? 'danger' : 'primary') + '" data-ok>' + esc(okText) + '</button>' +
@@ -135,10 +135,12 @@
     bg.querySelector('[data-cancel]').focus();
   }
 
-  /* پیام‌های هشدار و هم‌پوشانی قبل از روشن‌کردن یک امکان */
+  /* پیام‌های هشدار، هم‌پوشانی و تداخل با افزونه‌های دیگر قبل از روشن‌کردن */
   function warnings(f) {
     var out = [];
     if (f.warn) out.push(f.warn);
+    var ext = (D.external || {})[f.id];
+    if (ext && ext.length) out.push('«' + ext.join('، ') + '» همین امکان را اجرا می‌کند؛ بهتر است فقط در یکی روشن باشد.');
     feats.forEach(function (o) {
       if (o.id === f.id || !isOn(o)) return;
       var a = (f.overlaps || []).indexOf(o.id) > -1;
@@ -153,15 +155,26 @@
     return '<span class="mb-tip" tabindex="0" role="note" aria-label="' + esc(f.tip) + '" data-tip="' + esc(f.tip) + '">?</span>';
   }
   function badgeHtml(f) {
-    if (f.badge === 'rec') return '<span class="mb-badge rec">پیشنهادی</span>';
-    if (f.badge === 'caution') return '<span class="mb-badge caution">نیازمند بررسی</span>';
-    return '';
+    var h = '';
+    if (f.badge === 'rec') h += '<span class="mb-badge rec">پیشنهادی</span>';
+    if (f.badge === 'caution') h += '<span class="mb-badge caution">نیازمند بررسی</span>';
+    var ext = (D.external || {})[f.id];
+    if (ext && ext.length) {
+      h += '<span class="mb-badge ext" tabindex="0" data-tip="این امکان همزمان توسط ' + esc(ext.join('، ')) + ' هم اجرا می‌شود. بهتر است فقط در یکی از آن‌ها روشن باشد تا تداخل پیش نیاید.">در ' + esc(ext.join('، ')) + ' هم فعال است</span>';
+    }
+    return h;
   }
-  function checksHtml(f, id, opts) {
+  function chip(attr, id, val, label, checked, cls) {
+    return '<label class="mb-chip' + (cls ? ' ' + cls : '') + '"><input type="checkbox" ' + attr + '="' + esc(id) + '" value="' + esc(val) + '"' + (checked ? ' checked' : '') + '><span>' + esc(label) + '</span></label>';
+  }
+  function checksHtml(id, opts, dropdown) {
     var cur = values[id] || [];
-    return '<div class="mb-checks">' + Object.keys(opts).map(function (k) {
-      return '<label class="mb-chk"><input type="checkbox" data-chk="' + id + '" value="' + esc(k) + '"' + (cur.indexOf(k) > -1 ? ' checked' : '') + '><span>' + esc(opts[k]) + '</span></label>';
-    }).join('') + '</div>';
+    var chips = '<div class="mb-chips">' + Object.keys(opts).map(function (k) { return chip('data-chk', id, k, opts[k], cur.indexOf(k) > -1); }).join('') + '</div>';
+    if (!dropdown) return chips;
+    var open = !!ddOpen[id];
+    var n = cur.length;
+    return '<button type="button" class="mb-dd-b" data-dd="' + id + '" aria-expanded="' + open + '"><span>' + (n ? fa(n) + ' مورد انتخاب شده' : 'هیچ موردی انتخاب نشده') + '</span>' + icon('chevron') + '</button>' +
+      (open ? '<div class="mb-dd-p">' + chips + '</div>' : '');
   }
   function taHtml(f, fld) {
     var id = fld.id, presets = fld.presets || [];
@@ -174,62 +187,63 @@
     var list = (D.menus && D.menus[f.source]) || [];
     var cur = values[f.id] || [];
     if (!list.length) return '<div class="mb-empty">فهرستی پیدا نشد. یک بار این صفحه را دوباره باز کنید.</div>';
-    return '<div class="mb-tree" data-tree="' + f.id + '">' + list.map(function (m) {
-      var kids = (m.children || []).map(function (c) {
-        return '<label class="mb-chk mb-sub"><input type="checkbox" data-tchk="' + f.id + '" value="' + esc(c.key) + '"' + (cur.indexOf(c.key) > -1 ? ' checked' : '') + '><span>' + esc(c.title) + '</span></label>';
-      }).join('');
-      return '<div class="mb-tree-g"><label class="mb-chk mb-top"><input type="checkbox" data-tchk="' + f.id + '" value="' + esc(m.key) + '"' + (cur.indexOf(m.key) > -1 ? ' checked' : '') + '><span>' + esc(m.title) + '</span></label>' + kids + '</div>';
+    return '<div class="mb-tree">' + list.map(function (m) {
+      var kids = (m.children || []).map(function (c) { return chip('data-tchk', f.id, c.key, c.title, cur.indexOf(c.key) > -1, 'sm'); }).join('');
+      return '<div class="mb-tree-g">' + chip('data-tchk', f.id, m.key, m.title, cur.indexOf(m.key) > -1, 'top') + (kids ? '<div class="mb-chips">' + kids + '</div>' : '') + '</div>';
+    }).join('') + '</div>';
+  }
+  function learnedHtml(f) {
+    var list = D.learned || [];
+    if (!list.length) return '<div class="mb-empty">هنوز دامنه‌ای شناسایی نشده. با بازدید از صفحه‌های سایت، این فهرست خودکار پر می‌شود.</div>';
+    return '<div class="mb-found">' + list.map(function (it) {
+      return '<div class="mb-found-r"><span dir="ltr">' + esc(it.host) + '</span><small>' + fa(it.count) + ' بار</small><button type="button" class="mb-btn sm" data-add="' + esc(it.host) + '" data-to="' + f.target + '">افزودن به فهرست سیاه</button></div>';
     }).join('') + '</div>';
   }
   function fieldHtml(f, fld) {
-    var hidden = fld.show_if && values[fld.show_if[0]] !== fld.show_if[1];
-    var show = f.type === 'toggle' ? isOn(f) : true;
-    var h = (hidden || !show) ? ' hidden' : '';
     if (fld.type === 'text') {
-      return '<label class="mb-field" data-field="' + fld.id + '"' + h + '><input class="mb-txt" type="text" value="' + esc(values[fld.id] || '') + '" placeholder="' + esc(fld.placeholder || '') + '" data-txt="' + fld.id + '" aria-label="' + esc(f.title) + '"></label>';
+      return '<label class="mb-fld wide"><input class="mb-txt" type="text" value="' + esc(values[fld.id] || '') + '" placeholder="' + esc(fld.placeholder || '') + '" data-txt="' + fld.id + '" aria-label="' + esc(f.title) + '"></label>';
     }
-    return '<label class="mb-field" data-field="' + fld.id + '"' + h + '>' +
-      '<input class="mb-num" type="number" min="' + fld.min + '" max="' + fld.max + '" value="' + esc(values[fld.id]) + '" data-num="' + fld.id + '" aria-label="' + esc(f.title) + '">' +
-      '<span class="mb-unit">' + esc(fld.unit || '') + '</span></label>';
+    return '<label class="mb-fld"><input class="mb-num" type="number" min="' + fld.min + '" max="' + fld.max + '" value="' + esc(values[fld.id]) + '" data-num="' + fld.id + '" aria-label="' + esc(fld.unit || f.title) + '"><span class="mb-unit">' + esc(fld.unit || '') + '</span></label>';
   }
   function extraHtml(f) {
-    var out = '';
-    if (f.type === 'checks') out += checksHtml(f, f.id, f.options || {});
+    var out = '', inline = '';
+    var visible = f.type !== 'toggle' || isOn(f);
+    if (f.type === 'checks') out += checksHtml(f.id, f.options || {}, f.ui === 'dropdown');
     if (f.type === 'textarea') out += taHtml(f, f);
     if (f.type === 'tree') out += treeHtml(f);
-    if (f.type === 'action') out += '<div class="mb-act-res" data-res="' + f.id + '"></div>';
-    (f.fields || []).forEach(function (fld) {
-      if (fld.type === 'textarea' && (f.type !== 'toggle' || isOn(f))) out += taHtml(f, fld);
-      if (fld.type === 'checks' && (f.type !== 'toggle' || isOn(f))) out += checksHtml(f, fld.id, fld.options || {});
-    });
+    if (f.type === 'learned') out += learnedHtml(f);
+    if (visible) {
+      (f.fields || []).forEach(function (fld) {
+        if (fld.show_if && values[fld.show_if[0]] !== fld.show_if[1]) return;
+        if (fld.type === 'number' || fld.type === 'text') inline += fieldHtml(f, fld);
+        if (fld.type === 'textarea') out += taHtml(f, fld);
+        if (fld.type === 'checks') out += checksHtml(fld.id, fld.options || {}, false);
+      });
+    }
+    if (inline) out = '<div class="mb-fields">' + inline + '</div>' + out;
     return out ? '<div class="mb-extra">' + out + '</div>' : '';
   }
   function rowHtml(f, showCat) {
-    var wide = isWide(f);
     var disabled = f.available === false;
     var ctl = '';
     if (f.type === 'select') {
       var opts = Object.keys(f.options).map(function (k) {
         return '<option value="' + esc(k) + '"' + (values[f.id] === k ? ' selected' : '') + '>' + esc(f.options[k]) + '</option>';
       }).join('');
-      ctl += '<select class="mb-sel" data-sel="' + f.id + '" aria-label="' + esc(f.title) + '"' + (disabled ? ' disabled' : '') + '>' + opts + '</select>';
-    } else if (f.type === 'text') {
-      ctl += '<input class="mb-txt" type="text" value="' + esc(values[f.id] || '') + '" placeholder="' + esc(f.placeholder || '') + '" data-txt="' + f.id + '" aria-label="' + esc(f.title) + '"' + (disabled ? ' disabled' : '') + '>';
-    } else if (f.type === 'action') {
-      ctl += '<button type="button" class="mb-btn primary sm" data-act="' + f.id + '"' + (disabled ? ' disabled' : '') + '>' + esc(f.button || 'اجرا') + '</button>';
-    } else if (f.type === 'checks' || f.type === 'textarea' || f.type === 'tree') {
-      ctl += '';
+      ctl = '<select class="mb-sel" data-sel="' + f.id + '" aria-label="' + esc(f.title) + '"' + (disabled ? ' disabled' : '') + '>' + opts + '</select>';
+    } else if (f.type === 'learned') {
+      ctl = '<button type="button" class="mb-btn sm" data-learn-clear>' + esc(f.button || 'پاک‌کردن') + '</button>';
+    } else if (f.type === 'checks' || f.type === 'textarea' || f.type === 'tree' || f.type === 'text') {
+      ctl = '';
     } else {
-      ctl += '<button type="button" class="mb-switch" role="switch" aria-checked="' + (isOn(f) ? 'true' : 'false') + '" data-sw="' + f.id + '" aria-label="' + esc(f.title) + '"' + (disabled ? ' disabled' : '') + '></button>';
+      ctl = '<button type="button" class="mb-switch" role="switch" aria-checked="' + (isOn(f) ? 'true' : 'false') + '" data-sw="' + f.id + '" aria-label="' + esc(f.title) + '"' + (disabled ? ' disabled' : '') + '></button>';
     }
-    (f.fields || []).forEach(function (fld) { if (fld.type === 'number' || fld.type === 'text') ctl = fieldHtml(f, fld) + ctl; });
     var req = disabled ? '<span class="mb-req">نیازمند ' + esc(f.requires.label) + '</span>' : '';
     var cat = showCat ? '<span class="mb-res-c">' + esc((catOf(f.cat) || {}).title || '') + '</span>' : '';
-    return '<div class="mb-row' + (wide ? ' mb-wide' : '') + (disabled ? ' is-off-plugin' : '') + '" data-row="' + f.id + '">' +
+    return '<div class="mb-row' + (isWide(f) ? ' mb-wide' : '') + (disabled ? ' is-off-plugin' : '') + '" data-row="' + f.id + '">' +
       '<div class="mb-row-t"><span class="mb-title">' + esc(f.title) + '</span>' + badgeHtml(f) + tipHtml(f) + req + cat + '</div>' +
-      '<div class="mb-ctl">' + ctl + '</div>' + extraHtml(f) + '</div>';
+      (ctl ? '<div class="mb-ctl">' + ctl + '</div>' : '') + extraHtml(f) + '</div>';
   }
-
   function rowsHtml(items, showCat) {
     var out = '', col = 0;
     items.forEach(function (f) {
@@ -248,21 +262,25 @@
     D.groups.forEach(function (g) {
       nav += '<div class="mb-nav-g">' + esc(g.title) + '</div>';
       g.items.forEach(function (c) {
-        if (c.planned) {
-          nav += '<button class="mb-nav-i" disabled>' + icon(c.icon) + '<span class="mb-grow">' + esc(c.title) + '</span><span class="mb-soon">به‌زودی</span></button>';
-        } else {
-          var cur = route === c.id && !query ? ' aria-current="page"' : '';
-          nav += '<button class="mb-nav-i" data-go="' + c.id + '"' + cur + '>' + icon(c.icon) + '<span class="mb-grow">' + esc(c.title) + '</span><span class="mb-count" data-cnt="' + c.id + '">' + fa(activeIn(c.id)) + '</span></button>';
-        }
+        var cur = route === c.id && !query ? ' aria-current="page"' : '';
+        nav += '<button class="mb-nav-i" data-go="' + c.id + '"' + cur + '>' + icon(c.icon) + '<span class="mb-grow">' + esc(c.title) + '</span><span class="mb-count" data-cnt="' + c.id + '">' + fa(activeIn(c.id)) + '</span></button>';
       });
     });
+    var star = D.repo
+      ? '<a class="mb-star" href="' + esc(D.repo) + '" target="_blank" rel="noopener noreferrer">' + icon('star') + '<span>اگر این افزونه به کارتان آمد، در گیت‌هاب ستاره بدهید</span></a>'
+      : '<span class="mb-star is-soon">' + icon('star') + '<span>اگر این افزونه به کارتان آمد، در گیت‌هاب ستاره بدهید <em>(به‌زودی)</em></span></span>';
     return '<aside class="mb-side">' +
-      '<div class="mb-brand"><span class="mb-logo">' + icon('shieldlogo') + '</span><span class="mb-brand-t">Disable Bloat Manager</span><span class="mb-ver">v' + esc(D.version) + '</span></div>' +
-      '<div class="mb-search">' + icon('search') + '<input type="search" id="mb-q" placeholder="جستجوی تنظیمات" value="' + esc(query) + '" aria-label="جستجوی تنظیمات"><kbd>/</kbd></div>' +
+      '<div class="mb-brand"><span class="mb-logo">' + icon('shieldlogo') + '</span><span class="mb-brand-t">مدیریت کارایی وردپرس</span></div>' +
       '<nav class="mb-nav" aria-label="بخش‌ها">' + nav + '</nav>' +
-      '<div class="mb-side-foot"><button class="mb-icon-btn" id="mb-theme" aria-label="تغییر حالت روشن و تیره"></button></div></aside>';
+      '<div class="mb-side-foot">' + star + '<span class="mb-ver">نسخه‌ی ' + fa(D.version) + '</span></div></aside>';
   }
-
+  function topHtml() {
+    return '<header class="mb-top"><div class="mb-search">' + icon('search') + '<input type="search" id="mb-q" placeholder="جستجوی تنظیمات" value="' + esc(query) + '" aria-label="جستجوی تنظیمات"><kbd>/</kbd></div>' +
+      '<button class="mb-icon-btn" id="mb-theme" aria-label="تغییر حالت روشن و تیره"></button></header>';
+  }
+  function bulkables(id) {
+    return feats.filter(function (f) { return f.cat === id && f.type === 'toggle' && f.bulk !== false && f.available !== false; });
+  }
   function categoryHtml(id) {
     var c = catOf(id);
     var sections = [];
@@ -271,51 +289,45 @@
       if (!s) { s = { name: f.section, items: [] }; sections.push(s); }
       s.items.push(f);
     });
-    var html = '<div class="mb-head"><h1>' + esc(c.title) + '</h1><p>' + esc(c.desc || '') + '</p></div>';
+    var bulk = bulkables(id);
+    var allOn = bulk.length && bulk.every(isOn);
+    var html = '<div class="mb-head"><div class="mb-head-r"><h1>' + esc(c.title) + '</h1><p>' + esc(c.desc || '') + '</p></div>' +
+      (bulk.length ? '<button class="mb-btn" data-bulk="' + id + '">' + icon(allOn ? 'reset' : 'wand') + (allOn ? 'غیرفعال‌سازی همه' : 'فعال‌سازی همه') + '</button>' : '') + '</div>';
     sections.forEach(function (s) {
-      html += '<section class="mb-card"><div class="mb-card-h">' + esc(s.name) + '<small>' + fa(s.items.filter(isOn).length) + ' از ' + fa(s.items.length) + ' فعال</small></div>' +
-        rowsHtml(s.items) + '</section>';
+      html += '<section class="mb-card"><div class="mb-card-h">' + esc(s.name) + '<small>' + fa(s.items.filter(isOn).length) + ' از ' + fa(s.items.length) + ' فعال</small></div>' + rowsHtml(s.items) + '</section>';
     });
     return html;
   }
-
   function searchHtml() {
     var q = query.trim().toLowerCase();
-    var res = feats.filter(function (f) {
-      return (f.title + ' ' + f.tip).toLowerCase().indexOf(q) > -1;
-    });
-    var html = '<div class="mb-head"><h1>نتیجه‌ی جستجو</h1><p>' + fa(res.length) + ' مورد برای «' + esc(query) + '» پیدا شد.</p></div>';
+    var res = feats.filter(function (f) { return (f.title + ' ' + f.tip).toLowerCase().indexOf(q) > -1; });
+    var html = '<div class="mb-head"><div class="mb-head-r"><h1>نتیجه‌ی جستجو</h1><p>' + fa(res.length) + ' مورد برای «' + esc(query) + '» پیدا شد.</p></div></div>';
     html += '<section class="mb-card">' + (res.length ? rowsHtml(res, true) : '<div class="mb-empty">چیزی پیدا نشد. کلمه‌ی ساده‌تری بنویسید، مثلاً «فید» یا «دیدگاه».</div>') + '</section>';
     return html;
   }
-
+  function kv(k, v) { return '<div class="mb-kv"><span>' + esc(k) + '</span><b>' + esc(v) + '</b></div>'; }
   function overviewHtml() {
     var active = feats.filter(isOn);
-    var caution = active.filter(function (f) { return f.badge === 'caution'; });
-    var html = '<div class="mb-head"><h1>نمای کلی</h1><p>وضعیت امکان‌های فعال و اطلاعات سایت.</p></div>';
+    var html = '<div class="mb-head"><div class="mb-head-r"><h1>نمای کلی</h1><p>وضعیت امکان‌های فعال و اطلاعات سایت.</p></div></div>';
     html += '<div class="mb-stats">' +
       '<div class="mb-stat"><b>' + fa(active.length) + '</b><span>امکان فعال</span></div>' +
       '<div class="mb-stat"><b>' + fa(feats.length) + '</b><span>امکان موجود</span></div>' +
-      '<div class="mb-stat warn"><b>' + fa(caution.length) + '</b><span>فعال و نیازمند بررسی</span></div></div>';
-
+      '<div class="mb-stat"><b>' + fa(Math.round(active.length / feats.length * 100)) + '٪</b><span>درصد فعال‌سازی</span></div></div>';
     var prog = '';
     D.groups.forEach(function (g) {
       g.items.forEach(function (c) {
-        if (c.planned) return;
         var a = activeIn(c.id), t = totalIn(c.id);
         prog += '<div class="mb-prog"><span>' + esc(c.title) + '</span><span class="mb-bar"><i style="width:' + (t ? Math.round(a / t * 100) : 0) + '%"></i></span><small>' + a + '/' + t + '</small></div>';
       });
     });
-    var cautionHtml = caution.length ? caution.map(function (f) {
-      return '<div class="mb-row" style="min-height:42px"><div class="mb-row-t"><span class="mb-title">' + esc(f.title) + '</span>' + tipHtml(f) + '<span class="mb-res-c">' + esc((catOf(f.cat) || {}).title) + '</span></div>' +
-        '<div class="mb-ctl"><button class="mb-btn sm" data-off="' + f.id + '">خاموش کن</button></div></div>';
-    }).join('') : '<div class="mb-empty">هیچ امکان فعالی نیاز به بررسی ندارد.</div>';
-
+    var issues = D.repo
+      ? '<a class="mb-btn primary" href="' + esc(D.repo.replace(/\/$/, '')) + '/issues/new" target="_blank" rel="noopener noreferrer">' + icon('chat') + 'ثبت گزارش در گیت‌هاب</a>'
+      : '<button class="mb-btn" disabled>' + icon('chat') + 'ثبت گزارش (به‌زودی)</button>';
+    var s = D.site;
     html += '<div class="mb-two">' +
       '<section class="mb-card"><div class="mb-card-h">فعال بر اساس بخش</div><div style="padding:8px 0">' + prog + '</div></section>' +
-      '<section class="mb-card"><div class="mb-card-h">فعال و نیازمند بررسی<small>بعد از روشن‌کردن، سایت را یک بار ببینید</small></div>' + cautionHtml + '</section></div>';
-
-    var s = D.site;
+      '<section class="mb-card"><div class="mb-card-h">تماس با ما</div><div class="mb-card-b">' +
+      '<p class="mb-tool-d">اگر افزونه مشکلی داشت، امکانی خراب کار کرد یا پیشنهادی دارید، آن را در بخش Issues گیت‌هاب ثبت کنید. هر چه توضیح دقیق‌تر باشد، زودتر رفع می‌شود (نسخه‌ی وردپرس، نسخه‌ی افزونه و مراحل بروز مشکل را بنویسید).</p>' + issues + '</div></section></div>';
     html += '<div class="mb-two" style="margin-top:16px">' +
       '<section class="mb-card"><div class="mb-card-h">اطلاعات سایت</div>' +
       kv('نسخه‌ی وردپرس', s.wp) + kv('نسخه‌ی PHP', s.php) + kv('قالب فعال', s.theme) + kv('افزونه‌های فعال', fa(s.plugins)) +
@@ -326,7 +338,6 @@
       '<button class="mb-btn danger" id="mb-reset">' + icon('reset') + 'بازنشانی تنظیمات</button></div></div></section></div>';
     return html;
   }
-  function kv(k, v) { return '<div class="mb-kv"><span>' + esc(k) + '</span><b>' + esc(v) + '</b></div>'; }
 
   /* ───── رندر ───── */
   function theme() { return localStorage.getItem('mbTheme') === 'dark' ? 'dark' : 'light'; }
@@ -334,23 +345,24 @@
     var t = theme();
     root.setAttribute('data-theme', t);
     var b = document.getElementById('mb-theme');
-    if (b) b.innerHTML = icon(t === 'dark' ? 'sun' : 'moon') + (t === 'dark' ? 'حالت روشن' : 'حالت تیره');
+    if (b) b.innerHTML = icon(t === 'dark' ? 'sun' : 'moon');
   }
   function mainHtml() {
     if (query.trim()) return searchHtml();
     if (route === 'overview') return overviewHtml();
     return categoryHtml(route);
   }
-  function render() {
+  function render(animate) {
     var focusQ = document.activeElement && document.activeElement.id === 'mb-q';
     var pos = focusQ ? document.activeElement.selectionStart : 0;
-    root.innerHTML = '<div class="mb-main"><div class="mb-main-in">' + mainHtml() + '</div></div>' + sideHtml();
+    var y = window.pageYOffset;
+    root.innerHTML = '<div class="mb-main">' + topHtml() + '<div class="mb-main-in' + (animate ? ' mb-enter' : '') + '">' + mainHtml() + '</div></div>' + sideHtml();
     root.appendChild(layer);
     tipbox.hidden = true;
     applyTheme();
+    if (!animate) window.scrollTo(0, y);
     if (focusQ) { var q = document.getElementById('mb-q'); q.focus(); q.setSelectionRange(pos, pos); }
   }
-  /* بعد از ذخیره فقط شمارنده‌ها و سرتیتر کارت‌ها را تازه می‌کنیم تا جای صفحه نپرد */
   function refreshChrome() {
     document.querySelectorAll('[data-cnt]').forEach(function (n) { n.textContent = fa(activeIn(n.getAttribute('data-cnt'))); });
     if (route === 'overview' && !query.trim()) render();
@@ -358,7 +370,7 @@
   function go(r) {
     route = r; query = '';
     history.replaceState(null, '', '#' + r);
-    render();
+    render(true);
     window.scrollTo(0, 0);
   }
 
@@ -366,9 +378,7 @@
   function changeFeature(f, newVal) {
     var turningOn = f.type === 'select' ? newVal !== f['default'] : newVal === 1;
     var msgs = turningOn ? warnings(f) : [];
-    function commit() {
-      save(f.id, newVal, function () { render(); });
-    }
+    function commit() { save(f.id, newVal, function () { render(); }); }
     if (msgs.length) confirmBox('قبل از فعال‌سازی', msgs, 'متوجه شدم، فعال شود', commit);
     else commit();
   }
@@ -383,39 +393,52 @@
     }
     if (t.hasAttribute('data-sw')) {
       var f = byId[t.getAttribute('data-sw')];
-      var next = isOn(f) ? 0 : 1;
-      return changeFeature(f, next);
+      return changeFeature(f, isOn(f) ? 0 : 1);
+    }
+    if (t.hasAttribute('data-dd')) {
+      var did = t.getAttribute('data-dd');
+      ddOpen[did] = !ddOpen[did];
+      return render();
+    }
+    if (t.hasAttribute('data-bulk')) {
+      var cid = t.getAttribute('data-bulk');
+      var list = bulkables(cid);
+      var allOn = list.every(isOn);
+      var go1 = function () {
+        post('mb_bulk', { cat: cid, value: allOn ? 0 : 1 }).then(function (d) {
+          values = d.values; toast(allOn ? 'همه خاموش شدند' : 'همه روشن شدند'); render();
+        }).catch(function () { toast('اعمال نشد. دوباره تلاش کنید.', true); });
+      };
+      if (allOn) return go1();
+      var off = list.filter(function (x) { return !isOn(x); });
+      var caution = off.filter(function (x) { return x.badge === 'caution'; }).length;
+      return confirmBox('فعال‌سازی همه', [
+        fa(off.length) + ' امکان در این بخش روشن می‌شود.',
+        caution ? fa(caution) + ' مورد از آن‌ها «نیازمند بررسی» هستند و ممکن است ظاهر یا کارکرد سایت را تغییر بدهند. بعد از اعمال، سایت را یک بار ببینید.' : ''
+      ], 'روشن شود', go1);
     }
     if (t.hasAttribute('data-preset')) {
       var pid = t.getAttribute('data-preset');
-      var pf = null;
-      feats.forEach(function (x) { if (x.id === pid) pf = x; (x.fields || []).forEach(function (fl) { if (fl.id === pid) pf = fl; }); });
+      var pf = findDef(pid);
       var cur = String(values[pid] || '').split('\n').filter(Boolean);
       pf.presets[+t.getAttribute('data-pi')].items.forEach(function (h) { if (cur.indexOf(h) < 0) cur.push(h); });
       return save(pid, cur.join('\n'), function () { render(); });
     }
-    if (t.hasAttribute('data-act')) {
-      var af = byId[t.getAttribute('data-act')];
-      var box = root.querySelector('[data-res="' + af.id + '"]');
-      t.disabled = true;
-      box.innerHTML = '<div class="mb-empty">در حال بررسی... ممکن است چند دقیقه طول بکشد.</div>';
-      return post(af.action).then(function (d) {
-        t.disabled = false;
-        var items = d.items || [];
-        box.innerHTML = items.length ? '<div class="mb-found">' + items.map(function (it) {
-          return '<div class="mb-found-r"><span dir="ltr">' + esc(it.host) + '</span><small>' + fa(it.count) + ' بار</small><button type="button" class="mb-btn sm" data-add="' + esc(it.host) + '" data-to="' + af.target + '">افزودن به فهرست مسدود</button></div>';
-        }).join('') + '</div>' : '<div class="mb-empty">دامنه‌ی خارجیِ تازه‌ای پیدا نشد.</div>';
-      }).catch(function () { t.disabled = false; box.innerHTML = '<div class="mb-empty">بررسی انجام نشد. دوباره تلاش کنید.</div>'; });
-    }
     if (t.hasAttribute('data-add')) {
       var to = t.getAttribute('data-to');
-      var lst = String(values[to] || '').split('\n').filter(Boolean);
       var hh = t.getAttribute('data-add');
+      var lst = String(values[to] || '').split('\n').filter(Boolean);
       if (lst.indexOf(hh) < 0) lst.push(hh);
-      return save(to, lst.join('\n'), function () { t.closest('.mb-found-r').remove(); var ta = root.querySelector('[data-ta="' + to + '"]'); if (ta) ta.value = lst.join('\n'); });
+      return save(to, lst.join('\n'), function () {
+        D.learned = (D.learned || []).filter(function (x) { return x.host !== hh; });
+        post('mb_learned', { op: 'remove', host: hh }).catch(function () {});
+        render();
+      });
     }
-    if (t.hasAttribute('data-off')) {
-      return save(t.getAttribute('data-off'), 0, function () { render(); });
+    if (t.hasAttribute('data-learn-clear')) {
+      return confirmBox('پاک‌کردن پیشنهادها', ['فهرست پیشنهادهای شناسایی‌شده خالی می‌شود و دوباره از نو یاد گرفته می‌شود.'], 'پاک شود', function () {
+        post('mb_learned', { op: 'clear' }).then(function (d) { D.learned = d.learned || []; render(); }).catch(function () { toast('انجام نشد.', true); });
+      });
     }
     if (t.id === 'mb-rec') {
       return confirmBox('تنظیمات پیشنهادی', ['امکان‌های کم‌خطر و پیشنهادی روشن می‌شوند.', 'گزینه‌هایی که الان روشن کرده‌اید خاموش نمی‌شوند.'], 'اعمال شود', function () {
@@ -424,7 +447,7 @@
       });
     }
     if (t.id === 'mb-reset') {
-      return confirmBox('بازنشانی تنظیمات', ['همه‌ی گزینه‌ها به حالت اولیه برمی‌گردند و همه‌ی امکان‌ها خاموش می‌شوند.', 'این کار قابل بازگشت نیست.'], 'بازنشانی شود', function () {
+      return confirmBox('بازنشانی تنظیمات', ['همه‌ی گزینه‌ها به حالت اولیه برمی‌گردند.', 'این کار قابل بازگشت نیست.'], 'بازنشانی شود', function () {
         post('mb_reset').then(function (d) { values = d.values; toast('تنظیمات بازنشانی شد'); render(); })
           .catch(function () { toast('بازنشانی نشد. دوباره تلاش کنید.', true); });
       }, true);
@@ -438,35 +461,35 @@
       var arr = [].slice.call(root.querySelectorAll('[data-chk="' + cid + '"]:checked')).map(function (x) { return x.value; });
       var cf = byId[cid];
       var was = (values[cid] || []).length > 0;
+      var refresh = function () { render(); };
       if (cf && !was && arr.length && warnings(cf).length) {
         el.checked = false;
-        return confirmBox('قبل از فعال‌سازی', warnings(cf), 'متوجه شدم، فعال شود', function () { save(cid, arr, function () { render(); }); });
+        return confirmBox('قبل از فعال‌سازی', warnings(cf), 'متوجه شدم، فعال شود', function () { save(cid, arr, refresh); });
       }
-      return save(cid, arr);
+      return save(cid, arr, refresh);
     }
     if (el.hasAttribute('data-tchk')) {
       var tid = el.getAttribute('data-tchk');
-      var t = [].slice.call(root.querySelectorAll('[data-tchk="' + tid + '"]:checked')).map(function (x) { return x.value; });
-      return save(tid, t);
+      var tl = [].slice.call(root.querySelectorAll('[data-tchk="' + tid + '"]:checked')).map(function (x) { return x.value; });
+      return save(tid, tl);
     }
     if (el.hasAttribute('data-txt')) return save(el.getAttribute('data-txt'), el.value);
     if (el.hasAttribute('data-ta')) return save(el.getAttribute('data-ta'), el.value, function () { render(); });
     if (el.hasAttribute('data-sel')) {
-      var f = byId[el.getAttribute('data-sel')];
-      var prev = values[f.id];
+      var sf = byId[el.getAttribute('data-sel')];
+      var prev = values[sf.id];
       var val = el.value;
-      var msgs = val !== f['default'] ? warnings(f) : [];
+      var msgs = val !== sf['default'] ? warnings(sf) : [];
       if (msgs.length) {
         el.value = prev;
-        return confirmBox('قبل از فعال‌سازی', msgs, 'متوجه شدم، فعال شود', function () { save(f.id, val, function () { render(); }); });
+        return confirmBox('قبل از فعال‌سازی', msgs, 'متوجه شدم، فعال شود', function () { save(sf.id, val, function () { render(); }); });
       }
-      return save(f.id, val, function () { render(); });
+      return save(sf.id, val, function () { render(); });
     }
     if (el.hasAttribute('data-num')) {
       var id = el.getAttribute('data-num');
+      var def = findDef(id);
       var n = parseInt(el.value, 10);
-      var def = null;
-      feats.forEach(function (x) { (x.fields || []).forEach(function (fl) { if (fl.id === id) def = fl; }); });
       if (isNaN(n)) n = def['default'];
       n = Math.max(def.min, Math.min(def.max, n));
       el.value = n;
@@ -486,19 +509,19 @@
     var w = tipbox.offsetWidth, h = tipbox.offsetHeight;
     var left = Math.max(8, Math.min(r.right - w + 10, window.innerWidth - w - 8));
     var top = r.top - h - 9;
-    if (top < 40) top = r.bottom + 9;
+    if (top < 90) top = r.bottom + 9;
     tipbox.style.left = left + 'px';
     tipbox.style.top = top + 'px';
   }
   root.addEventListener('mouseover', function (e) {
-    var tip = e.target.closest && e.target.closest('.mb-tip');
+    var tip = e.target.closest && e.target.closest('[data-tip]');
     if (tip) showTip(tip);
   });
   root.addEventListener('mouseout', function (e) {
-    if (e.target.closest && e.target.closest('.mb-tip')) tipbox.hidden = true;
+    if (e.target.closest && e.target.closest('[data-tip]')) tipbox.hidden = true;
   });
   root.addEventListener('focusin', function (e) {
-    var tip = e.target.closest && e.target.closest('.mb-tip');
+    var tip = e.target.closest && e.target.closest('[data-tip]');
     if (tip) showTip(tip);
   });
   root.addEventListener('focusout', function () { tipbox.hidden = true; });
@@ -514,6 +537,6 @@
   });
 
   var h = (location.hash || '').replace('#', '');
-  if (h && catOf(h) && !catOf(h).planned) route = h;
+  if (h && catOf(h)) route = h;
   render();
 })();

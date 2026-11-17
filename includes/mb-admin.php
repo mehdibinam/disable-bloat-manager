@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) exit;
 function mb_admin_hook() { return 'toplevel_page_' . MB_SLUG; }
 
 add_action('admin_menu', function () {
-    add_menu_page('Disable Bloat Manager', 'Disable Bloat', 'manage_options', MB_SLUG, 'mb_render_page', 'dashicons-performance', 81);
+    add_menu_page('مدیریت کارایی وردپرس', 'مدیریت کارایی', 'manage_options', MB_SLUG, 'mb_render_page', 'dashicons-performance', 81);
 });
 
 // در صفحه‌ی خود افزونه، اعلان‌های بقیه‌ی افزونه‌ها نمایش داده نمی‌شود
@@ -16,6 +16,10 @@ add_action('current_screen', function ($screen) {
     }
 });
 
+add_filter('admin_body_class', function ($c) {
+    return (isset($_GET['page']) && $_GET['page'] === MB_SLUG) ? $c . ' mb-page' : $c;
+});
+
 add_action('admin_enqueue_scripts', function ($hook) {
     if ($hook !== mb_admin_hook()) return;
     wp_enqueue_style('mb-admin', MB_URL . 'assets/css/mb-admin.css', [], MB_VERSION);
@@ -25,6 +29,11 @@ add_action('admin_enqueue_scripts', function ($hook) {
     foreach (mb_features() as $f) {
         $f['type'] = isset($f['type']) ? $f['type'] : 'toggle';
         if (!empty($f['options_cb'])) { $f['options'] = mb_option_choices($f); unset($f['options_cb']); }
+        if (!empty($f['fields'])) {
+            foreach ($f['fields'] as $i => $fld) {
+                if (!empty($fld['options_cb'])) { $f['fields'][$i]['options'] = mb_option_choices($fld); unset($f['fields'][$i]['options_cb']); }
+            }
+        }
         $f['available'] = true;
         if (!empty($f['requires']['plugin'])) {
             $f['available'] = mb_plugin_active($f['requires']['plugin']);
@@ -39,6 +48,9 @@ add_action('admin_enqueue_scripts', function ($hook) {
         'groups'   => mb_groups(),
         'features' => $features,
         'values'   => mb_get_options(),
+        'repo'     => MB_REPO,
+        'external' => mb_external_conflicts(),
+        'learned'  => mb_learned_list(),
         'site'     => [
             'wp'      => get_bloginfo('version'),
             'php'     => PHP_VERSION,
@@ -90,5 +102,21 @@ add_action('wp_ajax_mb_recommended', function () {
 add_action('wp_ajax_mb_reset', function () {
     mb_ajax_guard();
     mb_reset_options();
+    wp_send_json_success(['values' => mb_get_options()]);
+});
+
+add_action('wp_ajax_mb_bulk', function () {
+    mb_ajax_guard();
+    $cat = isset($_POST['cat']) ? sanitize_key(wp_unslash($_POST['cat'])) : '';
+    $val = empty($_POST['value']) ? 0 : 1;
+    $opts = mb_get_options();
+    foreach (mb_features() as $f) {
+        if ($f['cat'] !== $cat) continue;
+        if ((isset($f['type']) ? $f['type'] : 'toggle') !== 'toggle') continue;
+        if (isset($f['bulk']) && $f['bulk'] === false) continue;
+        if (!empty($f['requires']['plugin']) && !mb_plugin_active($f['requires']['plugin'])) continue;
+        $opts[$f['id']] = $val;
+    }
+    update_option(MB_OPT, $opts);
     wp_send_json_success(['values' => mb_get_options()]);
 });

@@ -83,7 +83,7 @@ function mb_apply_secure($o, $on) {
     }
     if ($o['sec_rest_access'] !== 'everyone') {
         $mode = $o['sec_rest_access'];
-        $pub = array_map(function ($n) { return trim($n, '/'); }, mb_lines($o['sec_rest_namespaces']));
+        $pub = ['contact-form-7', 'wc/store'];
         add_filter('rest_pre_dispatch', function ($r, $server, $request) use ($mode, $pub) {
             $ns = trim($request->get_route(), '/');
             foreach ($pub as $p) if ($p !== '' && ($ns === $p || strpos($ns, $p . '/') === 0)) return $r;
@@ -110,8 +110,8 @@ function mb_apply_secure($o, $on) {
     }
 
     /* ورود */
-    $allow = mb_lines($o['fw_allow_ips']);
-    $ip = mb_client_ip($o['fw_ip_source']);
+    $allow = [];
+    $ip = mb_client_ip('remote_addr');
     if ($on('login_limit')) {
         $tries = (int) $o['login_limit_tries']; $win = (int) $o['login_limit_window'] * 60; $lock = (int) $o['login_limit_lock'] * 60;
         $k = 'mb_ll_' . md5($ip); $lk = 'mb_lk_' . md5($ip);
@@ -170,16 +170,14 @@ function mb_login_slug($slug) {
 }
 
 function mb_firewall($o, $on, $ip, $allow) {
-    $any = $on('fw_signatures') || $on('fw_uploads') || $on('fw_scanners') || $on('fw_same_origin') || $on('fw_methods') || $on('fw_rate') || trim($o['fw_block_ips']) !== '';
+    $any = $on('fw_signatures') || $on('fw_uploads') || $on('fw_scanners') || $on('fw_same_origin') || $on('fw_methods') || $on('fw_rate');
     if (!$any) return;
     add_action('init', function () use ($o, $on, $ip, $allow) {
         if (wp_doing_cron() || (defined('WP_CLI') && WP_CLI) || !$ip) return;
         if (mb_ip_in($ip, $allow)) return;
-        if (mb_ip_in($ip, mb_lines($o['fw_block_ips']))) mb_deny(403, 'دسترسی شما مسدود شده است.');
         if (current_user_can('manage_options')) return;
         $uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
         $path = (string) wp_parse_url($uri, PHP_URL_PATH);
-        foreach (mb_lines($o['fw_allow_paths']) as $p) if ($p !== '' && strpos($path, rtrim($p, '/')) === 0) return;
         $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET';
         $is_rest = strpos($path, '/wp-json/') !== false || isset($_GET['rest_route']);
 
@@ -248,6 +246,7 @@ function mb_net_blocked($url, $o) {
 
 function mb_apply_net($o, $on) {
     $active = $o['net_mode'] !== 'off' || $on('net_mixpanel');
+    if ($on('net_learn')) mb_learn_hook();
     if ($active) {
         add_filter('pre_http_request', function ($pre, $args, $url) use ($o) {
             return mb_net_blocked($url, $o) ? new WP_Error('mb_net_blocked', 'درخواست توسط Disable Bloat Manager مسدود شد.') : $pre;
@@ -308,33 +307,59 @@ function mb_apply_net($o, $on) {
     }
 }
 
-/* ───────────── اسکن سایت ───────────── */
-add_action('wp_ajax_mb_scan_site', function () {
-    mb_ajax_guard();
-    @set_time_limit(120);
-    $urls = [home_url('/')];
-    $q = get_posts(['numberposts' => 14, 'post_type' => ['post', 'page', 'product'], 'post_status' => 'publish', 'orderby' => 'date', 'order' => 'DESC']);
-    foreach ($q as $p) $urls[] = get_permalink($p);
-    $site = strtolower((string) wp_parse_url(home_url(), PHP_URL_HOST));
+/* ───────────── یادگیری خودکار دامنه‌ها ───────────── */
+function mb_learned_list() {
     $o = mb_get_options();
-    $found = [];
-    foreach (array_unique($urls) as $u) {
-        $r = wp_remote_get($u, ['timeout' => 12, 'redirection' => 3, 'user-agent' => 'Mozilla/5.0 (MB-Scan)']);
-        if (is_wp_error($r)) continue;
-        $body = wp_remote_retrieve_body($r);
-        if (!preg_match_all('#(?:src|href|data-src|data-href|action)\s*=\s*["\'](?:https?:)?//([^/"\'?\#\s]+)|url\(\s*["\']?(?:https?:)?//([^/"\')\s]+)|@import\s+["\'](?:https?:)?//([^/"\']+)#i', $body, $m)) continue;
-        $hosts = array_filter(array_merge($m[1], $m[2], $m[3]));
-        foreach ($hosts as $h) {
-            $h = strtolower(preg_replace('/:\d+$/', '', $h));
-            if ($h === '' || $h === $site || mb_host_listed($h, [$site]) || strpos($h, '.') === false) continue;
-            if (mb_host_listed($h, mb_lines($o['net_blacklist']))) continue;
-            $found[$h] = isset($found[$h]) ? $found[$h] + 1 : 1;
-        }
+    $cur = get_option('mb_net_learned', []);
+    if (!is_array($cur)) return [];
+    $black = mb_lines($o['net_blacklist']);
+    $out = [];
+    foreach ($cur as $h => $c) {
+        if (mb_host_listed($h, $black)) continue;
+        $out[] = ['host' => $h, 'count' => (int) $c];
+        if (count($out) >= 60) break;
     }
-    arsort($found);
-    $items = [];
-    foreach (array_slice($found, 0, 60, true) as $h => $c) $items[] = ['host' => $h, 'count' => $c];
-    wp_send_json_success(['items' => $items]);
+    return $out;
+}
+
+function mb_learn_collect($html) {
+    if (!is_string($html) || stripos($html, '<html') === false) return;
+    if (!preg_match_all('#(?:src|href|data-src|data-href|action)\s*=\s*["\'](?:https?:)?//([^/"\'?\\#\s]+)|url\(\s*["\']?(?:https?:)?//([^/"\')\s]+)|@import\s+["\'](?:https?:)?//([^/"\']+)#i', $html, $m)) return;
+    $site = strtolower((string) wp_parse_url(home_url(), PHP_URL_HOST));
+    $seen = [];
+    foreach (array_merge($m[1], $m[2], $m[3]) as $h) {
+        $h = strtolower(preg_replace('/:\d+$/', '', (string) $h));
+        if ($h === '' || strpos($h, '.') === false || $h === $site || mb_host_listed($h, [$site]) || filter_var($h, FILTER_VALIDATE_IP)) continue;
+        $seen[$h] = 1;
+    }
+    if (!$seen) return;
+    $cur = get_option('mb_net_learned', []);
+    if (!is_array($cur)) $cur = [];
+    foreach ($seen as $h => $_) $cur[$h] = (isset($cur[$h]) ? (int) $cur[$h] : 0) + 1;
+    arsort($cur);
+    update_option('mb_net_learned', array_slice($cur, 0, 200, true), false);
+}
+
+/** از بخش کوچکی از بازدیدهای عادی نمونه می‌گیرد؛ پس فشار قابل‌توجهی به سرور نمی‌آورد */
+function mb_learn_hook() {
+    $start = function () {
+        if (isset($_GET['page']) && $_GET['page'] === MB_SLUG) return;
+        if (mt_rand(1, 12) !== 1) return;
+        ob_start(function ($html) { mb_learn_collect($html); return $html; });
+    };
+    add_action('template_redirect', function () use ($start) { if (!is_feed() && !is_embed() && !is_robots()) $start(); }, 5);
+    add_action('admin_init', function () use ($start) { if (!wp_doing_ajax() && !(defined('DOING_CRON') && DOING_CRON)) $start(); }, 0);
+}
+
+add_action('wp_ajax_mb_learned', function () {
+    mb_ajax_guard();
+    $op = isset($_POST['op']) ? sanitize_key(wp_unslash($_POST['op'])) : '';
+    $cur = get_option('mb_net_learned', []);
+    if (!is_array($cur)) $cur = [];
+    if ($op === 'clear') $cur = [];
+    if ($op === 'remove') { $h = isset($_POST['host']) ? strtolower(sanitize_text_field(wp_unslash($_POST['host']))) : ''; unset($cur[$h]); }
+    update_option('mb_net_learned', $cur, false);
+    wp_send_json_success(['learned' => mb_learned_list()]);
 });
 
 /* ───────────── مخفی‌سازی منوها ───────────── */

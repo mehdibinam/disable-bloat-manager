@@ -384,8 +384,8 @@ function mb_apply_third($o, $on) {
     if ($on('flexible_shipping_menu')) add_action('admin_menu', function () { remove_submenu_page('woocommerce', 'octolize-shipping-extensions'); }, 999);
 
     /* هوش مصنوعی */
-    if ($on('wp_ai')) add_filter('wp_supports_ai', '__return_false', 999);
-    if ($on('wp_connectors')) {
+    if ($on('wp_ai')) {
+        add_filter('wp_supports_ai', '__return_false', 999);
         add_action('admin_menu', function () {
             global $submenu;
             foreach (['options-general.php', 'tools.php'] as $parent) {

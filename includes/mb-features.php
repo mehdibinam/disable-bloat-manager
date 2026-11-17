@@ -124,9 +124,12 @@ function mb_apply_features() {
         add_filter('script_loader_src', function ($src) { return $src ? remove_query_arg('ver', $src) : $src; }, 9999);
     }
     if ($on('capital_p')) {
-        foreach (['the_content', 'the_title', 'wp_title', 'comment_text'] as $filter) {
-            $p = has_filter($filter, 'capital_P_dangit');
-            if ($p !== false) remove_filter($filter, 'capital_P_dangit', $p);
+        $map = ['the_content' => ['the_content'], 'the_title' => ['the_title'], 'page_title' => ['wp_title', 'document_title'], 'comment_text' => ['comment_text'], 'widgets' => ['widget_text_content', 'widget_block_content']];
+        foreach ((array) $o['capital_p_pick'] as $k) {
+            foreach (isset($map[$k]) ? $map[$k] : [] as $filter) {
+                $p = has_filter($filter, 'capital_P_dangit');
+                if ($p !== false) remove_filter($filter, 'capital_P_dangit', $p);
+            }
         }
     }
 
@@ -188,22 +191,13 @@ function mb_apply_features() {
         });
     }
     if ($on('dashboard_widgets')) {
-        add_action('wp_dashboard_setup', function () {
-            remove_meta_box('dashboard_quick_press', 'dashboard', 'side');
-            remove_meta_box('dashboard_recent_drafts', 'dashboard', 'side');
-            remove_meta_box('dashboard_primary', 'dashboard', 'side');
-            remove_meta_box('dashboard_secondary', 'dashboard', 'side');
-            remove_meta_box('dashboard_incoming_links', 'dashboard', 'normal');
-            remove_meta_box('dashboard_plugins', 'dashboard', 'normal');
-            remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
-            remove_meta_box('dashboard_activity', 'dashboard', 'normal');
-            remove_meta_box('dashboard_site_health', 'dashboard', 'normal');
-            remove_meta_box('dashboard_php_nag', 'dashboard', 'normal');
-            remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
-            remove_meta_box('woocommerce_dashboard_status', 'dashboard', 'normal');
-            remove_meta_box('wc_admin_dashboard_setup', 'dashboard', 'normal');
-            remove_action('welcome_panel', 'wp_welcome_panel');
-        });
+        $pick = (array) $o['dashboard_widgets_pick'];
+        add_action('wp_dashboard_setup', function () use ($pick) {
+            foreach ($pick as $id) {
+                if ($id === 'welcome_panel') { remove_action('welcome_panel', 'wp_welcome_panel'); continue; }
+                foreach (['normal', 'side', 'column3', 'column4'] as $ctx) remove_meta_box($id, 'dashboard', $ctx);
+            }
+        }, 99);
     }
     if ($on('view_transitions')) {
         add_action('admin_enqueue_scripts', function () {

@@ -1,112 +1,102 @@
-<div align="center">
+# مدیریت کارایی وردپرس · WordPress Performance Manager
 
-# Disable Bloat Manager
+<p align="center"><b>نسخه / Version 2.1.0</b> · وردپرس ۶٫۰+ · PHP ۷٫۴+ · مجوز: <a href="LICENSE">کد در دسترس، بدون اجازه‌ی کپی و فورک</a></p>
 
-**افزونه جامع غیرفعالسازی بلوت وردپرس، ووکامرس و افزونهها — همراه با امنیت، فایروال و مسدودسازی دامنهها**
-**All-in-one WordPress, WooCommerce & plugin bloat disabler — with security, firewall & domain blocking**
+[فارسی](#فارسی) · [English](#english)
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
-![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b)
-![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4)
-![License](https://img.shields.io/badge/license-GPLv2%2B-green)
-[![Download](https://img.shields.io/badge/download-latest%20release-brightgreen)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)
+---
 
-[فارسی](#-فارسی) • [English](#-english)
+<a id="فارسی"></a>
+
+<div dir="rtl">
+
+## فارسی
+
+**مدیریت کارایی وردپرس** مجموعه‌ای دسته‌بندی‌شده برای خاموش‌کردن بخش‌های اضافه‌ی وردپرس، ووکامرس و افزونه‌هاست؛ همراه با ابزارهای امنیت و کنترل ارتباط سایت با دامنه‌های بیرونی. هر امکان یک راهنمای ساده دارد (با رفتن روی علامت «؟») و رابط کاملاً فارسی و راست‌به‌چپ است.
+
+### نصب
+۱. آخرین نسخه ([`disable-bloat-manager-v2.1.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)) را دانلود و از بخش **افزونه‌ها ← افزودن ← بارگذاری افزونه** نصب و فعال کنید.
+۲. از منوی **مدیریت کارایی** یا لینک «تنظیمات» کنار نام افزونه در صفحه‌ی افزونه‌ها وارد شوید.
+۳. از **نمای کلی** روی «تنظیمات پیشنهادی» بزنید تا امکان‌های کم‌خطر روشن شوند، سپس هر بخش را بررسی کنید.
+
+> **مهم:** قبل از استفاده روی سایت اصلی، روی یک سایت آزمایشی امتحان کنید و از سایت پشتیبان بگیرید. امکان‌های برچسب‌خورده با «نیازمند بررسی» ممکن است ظاهر یا کارکرد سایت را عوض کنند.
+
+### راهنمای استفاده
+- **جستجو:** در هدر بالا (کلید `/` هم کار می‌کند) هر امکان را پیدا کنید.
+- **فعال‌سازی همه:** دکمه‌ی روبه‌روی عنوان هر بخش همه‌ی کلیدهای آن بخش را روشن یا خاموش می‌کند (قبل از روشن‌کردن، هشدار می‌دهد).
+- **هشدار تداخل:** اگر افزونه‌ی دیگری (مثل Perfmatters، WP Rocket یا Disable Bloat) همان امکان را اجرا کند، کنار امکان نشان داده می‌شود.
+- **گزینه‌های وابسته به افزونه:** اگر افزونه‌ی مربوطه (مثل ووکامرس یا المنتور) نصب نباشد، گزینه‌هایش دیده می‌شود ولی غیرفعال است.
+- **حالت تیره/روشن:** با آیکن بالای صفحه.
+- **ریست:** در «نمای کلی» دکمه‌ی «بازنشانی تنظیمات» همه‌چیز را به حالت اولیه برمی‌گرداند.
+- اگر با «آدرس سفارشی صفحه‌ی ورود» قفل شدید، در `wp-config.php` این خط را اضافه کنید: `define( 'MB_DISABLE_LOGIN_URL', true );`
+
+### بخش‌ها و امکانات
+| بخش | چه کاری می‌کند |
+|---|---|
+| سمت بازدیدکننده | حذف ایموجی، لینک‌ها و برچسب‌های اضافه‌ی سربرگ، اسکریپت‌های بلااستفاده، فید و نقشه‌ی سایت |
+| دیدگاه‌ها | بستن کامل یا جزئی دیدگاه، پینگ‌بک، Gravatar و پاک‌سازی خودکار اسپم |
+| پیشخوان | اعلان‌ها، ویجت‌ها، نوار بالا، Heartbeat، نسخه‌های پیشین، صفحه‌ی ورود |
+| ویرایشگر بلوک | غیرفعال‌سازی گوتنبرگ و بخش‌های اضافه‌ی آن |
+| ابزارک‌ها | حذف همه یا برخی ابزارک‌های هسته |
+| به‌روزرسانی‌ها | کنترل به‌روزرسانی خودکار هسته، افزونه‌ها و قالب‌ها |
+| ووکامرس | تبلیغات و ماژول‌های اضافه‌ی ووکامرس، Cart Fragments و اسکریپت‌ها |
+| فونت و افزونه‌ها | حذف یا میزبانی محلی فونت گوگل؛ پنهان‌کردن تبلیغات Jetpack، المنتور، Yoast و … |
+| هوش مصنوعی | خاموش‌کردن AI وردپرس (و صفحه‌ی اتصال‌دهنده‌ها) و AI افزونه‌ها |
+| امنیت | سخت‌سازی، هدرهای امنیتی، محافظت از ورود، آدرس ورود سفارشی و فایروال |
+| مسدودسازی دامنه‌ها | فهرست سیاه یا سفید دامنه، یادگیری خودکار دامنه‌های خارجی و قطع درخواست‌های کندکننده |
+| مخفی‌سازی منوها | مخفی‌کردن منوها و زیرمنوهای پیشخوان و نوار بالا با تشخیص خودکار افزونه‌های جدید |
+
+فهرست کامل (۱۶۱ امکان) با توضیح هر کدام: **[docs/FEATURES.md](docs/FEATURES.md)**
+
+### پرسش‌های متداول
+- **افزونه سایتم را کند نمی‌کند؟** خیر؛ فقط تنظیمات انتخابی اجرا می‌شود. «یادگیری دامنه‌ها» فقط از بخش کوچکی از بازدیدها نمونه می‌گیرد.
+- **بعد از روشن‌کردن گزینه‌ای سایت خراب شد؟** همان گزینه را خاموش کنید یا از «بازنشانی» استفاده کنید. اگر وارد پیشخوان نمی‌شوید، پوشه‌ی افزونه را موقتاً تغییر نام بدهید.
+- **مشکل یا پیشنهاد دارم:** در بخش [Issues](../../issues) گیت‌هاب ثبت کنید و نسخه‌ی وردپرس، نسخه‌ی افزونه و مراحل بروز مشکل را بنویسید.
+
+### مجوز
+کد برای مطالعه و گزارش مشکل عمومی است، اما **کپی، فورک و توزیع آن مجاز نیست**؛ استفاده روی سایت‌های خودتان آزاد است. متن کامل در [LICENSE](LICENSE).
 
 </div>
 
 ---
 
-## 🇮🇷 فارسی
+<a id="english"></a>
 
-### معرفی
-افزونه Disable Bloat Manager یک پلاگین سبک و یکپارچه است که قابلیتهای چندین افزونه محبوب بهینهسازی (Perfmatters، Disable Admin Notices، Featherweight، Disable Bloat for WP & Woo و ...) را در یک رابط مدرن با تبها و تولتیپ ارائه میدهد.
+## English
 
-**نسخه ۲٫۰** سه بخش کاملاً جدید اضافه کرده است: **امنیت و فایروال**، **مسدودسازی دامنه ها** و **مخفیسازی منوها**؛ به همراه کنترل فونت های گوگل و گزینه های تکمیلی برای دیدگاهها، ابزارک ها، پیشخوان و بروزرسانی ها. با بیش از ۱۵۰ گزینه، هم سرعت سایت را بالا می برد و هم سطح امنیت آن را بهبود میبخشد.
-
-### امکانات
-
-| نمونه قابلیتها | دسته |
-|---:|---:|
-| حذف ایموجی، Embed/oEmbed، Dashicons، jQuery Migrate، پارامتر `?ver=`، استایل Block Library و Global Styles، لینک REST و Generator، DNS Prefetch، Shortlink، RSD، WLW، فید RSS، Self Pingback، سنجش قدرت رمز، پالت فرمان، View Transitions، غیرفعالسازی گوگل مپ | **سمت بازدیدکننده و هسته** |
-| بستن دیدگاهها بر اساس نوع نوشته، بستن خودکار دیدگاه های قدیمی، صفحه بندی دیدگاه ها، غیرفعالسازی پینگ بک/تریک بک، حذف Gravatar، پاکسازی خودکار اسپم | **دیدگاه ها** |
-| پاکسازی داشبورد، حذف تب راهنما و Screen Options، سلامت سایت، درونریزی/برونبری، کنترل Heartbeat، محدودسازی بازبینیها، تنظیم Autosave، شخصی سازی صفحه ورود، مدیریت اعلانها، حذف لوگوی وردپرس و متن پایین پیشخوان | **پیشخوان** |
-| بازگشت به ویرایشگر کلاسیک، حذف Welcome Guide، Block Directory، الگوهای پیشفرض و راهدور، ویرایشگر قالب | **ویرایشگر بلوک** |
-| غیرفعالسازی همه یا انتخابی ابزارک های هسته، حذف کامل پشتیبانی از ابزارکها | **ابزارک ها** |
-| خاموش کردن بهروزرسانی خودکار هسته، قالب ها و افزونه ها، قطع کامل بررسی به روزرسانی | **بروزرسانی ها** |
-| غیرفعالسازی Analytics و Marketing، پیشنهادهای بازارچه، Cart Fragments، اسکریپتها و استایلها در صفحات غیرفروشگاهی، ابزارکها، تبلیغات ایمیل و پیشنهاد حملونقل | **ووکامرس** |
-| حذف هشدار و تبلیغ Jetpack/Blaze، ویجت و Google Fonts المنتور، تبلیغ و کامنت Yoast، CSS/JS فرم Contact Form 7، منوی ACF، UpdraftPlus | **افزونه های جانبی** |
-| غیرفعالسازی AI هسته وردپرس، المنتور، Rank Math، Yoast، Jetpack و Bertha | **هوش مصنوعی** |
-| حذف فونتهای گوگل، میزبانی محلی فونت، `font-display: swap`، بارگذاری ناهمگام Font Awesome، حذف فونت گوگل المنتور | **فونت های گوگل** |
-| سختسازی وردپرس (XML-RPC، کشف نام کاربری، ویرایشگر فایل، رمزهای برنامه، محدودیت REST)، هدرهای امنیتی و HSTS، محدودکردن تلاشهای ورود، پیام خطای یکسان، آدرس سفارشی صفحه ورود، فایروال (الگوهای حمله، بررسی بارگذاریها، مسدودکردن اسکنرها، محدودکردن متدها و نرخ درخواست، لیستهای IP و مسیرهای مستثنا) | **امنیت** |
-| حالت فهرست سیاه/سفید، اسکن سایت برای یافتن دامنههای خارجی، حذف فایلهای مسدودشده از صفحه، مسدودکردن درخواستهای fetch/XHR، قطع تله متری و بررسی به روزرسانی، محدودکردن زمان انتظار | **مسدودسازی دامنه ها** |
-| مخفی کردن منوها و زیرمنوهای پیشخوان و موارد نوار بالا، با تشخیص خودکار افزونه های تازه نصبشده | **مخفی سازی منوها** |
-
-### نصب
-1. فایل [`disable-bloat-manager-v2.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest) را از بخش Release دانلود کنید.
-2. پوشه `disable-bloat-manager` را در مسیر `wp-content/plugins/` قرار دهید (یا فایل zip را مستقیماً از «افزونهها ← بارگذاری افزونه» آپلود کنید).
-3. افزونه را از بخش «افزونهها» فعال کنید.
-4. به **منوی Disable Bloat** بروید و گزینههای دلخواه را روشن کنید.
-
-### راهنمای استفاده
-- همه گزینه ها بصورت پیشفرض **خاموش** هستند و هیچ تغییری اعمال نمیشود تا خودتان آنها را فعال کنید.
-- دکمه **«تنظیمات پیشنهادی»** گزینه های ایمن و پرتأثیر را یکجا روشن میکند.
-- گزینه های دارای نشان «⭐ پیشنهادی» و «⚠ نیازمند بررسی» بهتریتوان تأثیر و ریسک را نشان میدهند؛ متن هشدار قبل از فعالسازی نمایش داده میشود.
-- نشانگر «؟» کنار هر گزینه توضیح کامل را نشان میدهد.
-- گزینه های ووکامرس و افزونه های جانبی فقط در صورت فعال بودن افزونه مربوطه اعمال میشوند.
-- پس از فعالسازی گزینه های حساس (REST API، XML-RPC، فایروال، فیدها، کامنتها، HSTS) سایت و فرمها را حتماً تست کنید.
-- در صورت قفل شدن صفحه ورود، در `wp-config.php` خط `define( 'MB_DISABLE_LOGIN_URL', true );` را اضافه کنید.
-
-### نیازمندیها
-WordPress 6.0+ ‏• PHP 7.4+
-
-### مجوز
-این پروژه تحت مجوز **GNU General Public License v2 or later (GPLv2+)** منتشر شده است. استفاده، ویرایش و توزیع طبق شرایط مجوز GPL آزاد است. جزئیات کامل در فایل [LICENSE](LICENSE).
-
----
-
-## 🇬🇧 English
-
-### About
-Disable Bloat Manager is a lightweight, unified plugin that brings the features of several popular optimization plugins (Perfmatters, Disable Admin Notices, Featherweight, Disable Bloat for WP & Woo, and more) into one modern interface with AJAX tabs and tooltips.
-
-**Version 2.0** adds three brand-new sections — **Security & Firewall**, **Domain Blocking**, and **Menu Hiding** — plus Google Fonts controls and extra options for comments, widgets, admin, and updates. With 150+ options it boosts both performance and security.
-
-### Features
-
-| Category | Highlights |
-|---|---|
-| **Frontend & Core** | Remove emojis, Embed/oEmbed, Dashicons, jQuery Migrate, `?ver=` query strings, Block Library & Global Styles CSS, REST & generator tags, DNS prefetch, shortlink, RSD, WLW, RSS feeds, self-pingbacks, password strength meter, command palette, view transitions, Google Maps |
-| **Comments** | Close comments per post type, auto-close old comments, pagination, disable pingbacks/trackbacks, remove Gravatar, auto-clean spam |
-| **Admin & Dashboard** | Clean dashboard, remove help tabs & Screen Options, Site Health, import/export, Heartbeat control, revisions limit, Autosave, login page tweaks, admin notice control, remove WordPress logo and footer text |
-| **Block Editor** | Revert to classic editor, disable Welcome Guide, Block Directory, default & remote patterns, template editor |
-| **Widgets** | Disable all or selected core widgets, remove widget support entirely |
-| **Updates** | Disable auto-updates for core, themes and plugins, stop external update checks |
-| **WooCommerce** | Disable Analytics & Marketing, marketplace suggestions, Cart Fragments, scripts/styles on non-shop pages, widgets, email promos, shipping suggestions |
-| **Third-party** | Jetpack nags/Blaze, Elementor widget & Google Fonts, Yoast promos & HTML comment, Contact Form 7 assets, ACF menu, UpdraftPlus |
-| **AI** | Disable AI in WordPress core, Elementor, Rank Math, Yoast, Jetpack, and Bertha |
-| **Google Fonts** ⭐ | Remove Google Fonts, self-host fonts, `font-display: swap`, async Font Awesome, disable Elementor Google Fonts |
-| **🔒 Security** ⭐ | WordPress hardening (XML-RPC, user enumeration, file editor, application passwords, REST limits), security headers & HSTS, login attempt limiting, generic login errors, custom login URL, firewall (attack signatures, upload checks, scanner blocking, HTTP methods & rate limiting, IP/path allow & block lists) |
-| **🌐 Domain Blocking** ⭐ | Blacklist/whitelist modes, site scanner for external domains, strip blocked assets from page, block fetch/XHR requests, stop WordPress telemetry & update checks, external request timeout |
-| **Menu Hiding** ⭐ | Hide admin sidebar menus/submenus and admin bar items, with auto-detection of newly installed plugins |
+**WordPress Performance Manager** (Persian UI, RTL) is a categorized toolbox for switching off unnecessary parts of WordPress, WooCommerce and popular plugins, plus security hardening and control over which external domains your site talks to. Every option has a short plain-language tooltip (hover the "?" icon).
 
 ### Installation
-1. Download [`disable-bloat-manager-v2.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest) from the Releases section.
-2. Place the `disable-bloat-manager` folder in `wp-content/plugins/` (or upload the zip directly via **Plugins → Add New → Upload Plugin**).
-3. Activate it from the **Plugins** screen.
-4. Open the **Disable Bloat** menu and enable the options you want.
+1. Download the [latest release (`disable-bloat-manager-v2.1.zip`)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest), then upload it at **Plugins → Add New → Upload Plugin** and activate it.
+2. Open the **مدیریت کارایی** menu (or the "تنظیمات" link on the Plugins page).
+3. On the **Overview** page click "Recommended settings" to enable the low-risk options, then review each section.
 
-### Usage Guide
-- Every option is **off by default**; nothing changes until you turn it on.
-- The **Recommended settings** button enables the safe, high-impact options at once.
-- Look for the "⭐ Recommended" and "⚠ Review needed" badges — warnings are shown before enabling risky options.
-- Hover the "?" icon beside an option for a detailed explanation.
-- WooCommerce and third-party options only apply when the related plugin is active.
-- Test your site and forms after enabling sensitive options (REST API, XML-RPC, firewall, feeds, comments, HSTS).
-- If you get locked out of the login page, add `define( 'MB_DISABLE_LOGIN_URL', true );` to `wp-config.php`.
+> **Important:** test on a staging site and keep a backup first. Options marked "needs review" can change your site's look or behavior.
 
-### Requirements
-WordPress 6.0+ • PHP 7.4+
+### How to use it
+- **Search** from the header (`/` focuses it). **Enable all / Disable all** sits opposite each section title and asks for confirmation first.
+- **Overlap warnings:** if another plugin (Perfmatters, WP Rocket, Disable Bloat, Wordfence, …) already does the same thing, you'll see a badge and a warning before enabling.
+- Options for plugins that aren't installed (WooCommerce, Elementor, Yoast, …) are visible but disabled.
+- **Reset** and **Recommended settings** live on the Overview page. Locked out by the custom login URL? Add `define( 'MB_DISABLE_LOGIN_URL', true );` to `wp-config.php`.
+
+### What it covers (161 options)
+- **Visitor side:** emojis, head clutter, unused scripts/styles, feeds, sitemap, Google Maps, block styles.
+- **Comments:** disable fully or per post type, pingbacks, Gravatar, automatic spam cleanup.
+- **Dashboard:** notices (hide all / per notice), widgets (per widget), admin bar, Heartbeat, revisions, login page.
+- **Block editor, Widgets, Updates:** disable Gutenberg and its extras, core widgets, automatic updates.
+- **WooCommerce:** marketing/promo UI, WooCommerce Home, cart fragments, scripts on non-shop pages, reviews.
+- **Fonts & plugins:** remove or self-host Google Fonts; hide promos of Jetpack, Elementor, Yoast, CF7, ACF, UpdraftPlus and more.
+- **AI:** WordPress AI and Connectors page, Elementor AI/MCP, Rank Math, Yoast, Jetpack AI.
+- **Security:** hardening, security headers, login protection (attempt limit, custom login URL), a lightweight firewall (attack patterns, upload checks, scanner blocking, rate limiting).
+- **Domain blocking:** blacklist or whitelist mode, automatic domain learning from normal visits (sampled, light on the server), runtime blocking in the browser, telemetry/update-check blocking, request timeout cap.
+- **Menu hiding:** hide admin menus/submenus and admin-bar items; newly installed plugins appear automatically.
+
+Full Persian feature list: **[docs/FEATURES.md](docs/FEATURES.md)**.
+
+### FAQ
+- **Will it slow my site?** No. Only the options you switch on run. Domain learning samples a small share of page views.
+- **Something broke after enabling an option?** Turn that option off or use Reset. If you can't reach the dashboard, rename the plugin folder via FTP.
+- **Bugs and ideas:** open an [Issue](../../issues) with your WordPress version, plugin version, and steps to reproduce.
 
 ### License
-Released under the **GNU General Public License v2 or later (GPLv2+)**. You are free to use, modify and distribute it under the terms of the GPL. See [LICENSE](LICENSE).
+The code is public to be read and audited, but **copying, forking and redistributing it is not allowed**; running it on your own sites is free. See [LICENSE](LICENSE).
