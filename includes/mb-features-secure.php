@@ -364,8 +364,23 @@ add_action('wp_ajax_mb_learned', function () {
 
 /* ───────────── مخفی‌سازی منوها ───────────── */
 function mb_clean_title($t) {
-    $t = preg_replace('#<span\b[^>]*>.*?</span>#is', '', (string) $t);
-    return trim(wp_strip_all_tags($t));
+    $t = preg_replace('#<span\b[^>]*class="[^"]*(?:update-plugins|awaiting-mod|plugin-count|pending-count|count-\d+|ab-icon|dashicons)[^"]*"[^>]*>.*?</span>#is', '', (string) $t);
+    $t = html_entity_decode(wp_strip_all_tags($t), ENT_QUOTES, 'UTF-8');
+    return trim(preg_replace('/\s+/u', ' ', $t));
+}
+
+/** نام فارسی برای موارد شناخته‌شده‌ی نوار بالا؛ در غیر این‌صورت عنوان افزونه یا شناسه */
+function mb_bar_label($id, $title) {
+    $map = [
+        'wp-logo' => 'لوگوی وردپرس', 'site-name' => 'نام سایت', 'updates' => 'به‌روزرسانی‌ها', 'comments' => 'دیدگاه‌ها', 'new-content' => 'جدید (+)',
+        'my-account' => 'حساب کاربری', 'search' => 'جستجو', 'customize' => 'سفارشی‌سازی', 'edit' => 'ویرایش', 'view' => 'مشاهده', 'archive' => 'مشاهده‌ی بایگانی',
+        'preview' => 'پیش‌نمایش', 'menu-toggle' => 'دکمه‌ی منو (موبایل)', 'command-palette' => 'جستجوی سریع (Ctrl+K)', 'wp-command-palette' => 'جستجوی سریع (Ctrl+K)',
+        'about' => 'درباره‌ی وردپرس', 'wp-logo-external' => 'لینک‌های وردپرس', 'wporg' => 'WordPress.org', 'documentation' => 'مستندات', 'learn' => 'آموزش', 'support-forums' => 'انجمن پشتیبانی', 'feedback' => 'بازخورد',
+        'user-actions' => 'کارهای حساب', 'user-info' => 'اطلاعات کاربر', 'edit-profile' => 'ویرایش پروفایل', 'logout' => 'خروج', 'dashboard' => 'پیشخوان', 'appearance' => 'نمایش', 'themes' => 'قالب‌ها', 'widgets' => 'ابزارک‌ها', 'menus' => 'فهرست‌ها',
+    ];
+    if (isset($map[$id])) return $map[$id];
+    $t = mb_clean_title($title);
+    return $t !== '' ? $t : $id;
 }
 
 function mb_apply_menus($o) {
@@ -377,35 +392,62 @@ function mb_apply_menus($o) {
         add_action('admin_menu', function () {
             global $menu, $submenu;
             $out = [];
+            $count = [];
             foreach ((array) $menu as $m) {
                 $slug = isset($m[2]) ? $m[2] : '';
+                if ($slug === '' || $slug === MB_SLUG || (isset($m[4]) && strpos((string) $m[4], 'wp-menu-separator') !== false)) continue;
                 $title = mb_clean_title(isset($m[0]) ? $m[0] : '');
-                if ($slug === '' || $title === '' || $slug === MB_SLUG || (isset($m[4]) && strpos($m[4], 'wp-menu-separator') !== false)) continue;
+                if ($title === '') $title = $slug;
                 $kids = [];
                 foreach ((array) (isset($submenu[$slug]) ? $submenu[$slug] : []) as $s) {
+                    if (!isset($s[2]) || $s[2] === MB_SLUG) continue;
                     $st = mb_clean_title(isset($s[0]) ? $s[0] : '');
-                    if ($st === '' || !isset($s[2])) continue;
-                    $kids[] = ['key' => 's:' . $slug . '|' . $s[2], 'title' => $st];
+                    $kids[] = ['key' => 's:' . $slug . '|' . $s[2], 'title' => $st !== '' ? $st : $s[2]];
                 }
-                $out[] = ['key' => 'm:' . $slug, 'title' => $title, 'children' => $kids];
+                $out[] = ['key' => 'm:' . $slug, 'title' => $title, 'children' => $kids, 'locked' => $slug === 'options-general.php', 'slug' => $slug];
+                $count[$title] = isset($count[$title]) ? $count[$title] + 1 : 1;
+            }
+            foreach ($out as &$row) {
+                if ($count[$row['title']] > 1) $row['title'] .= ' · ' . mb_substr($row['slug'], 0, 28);
+                unset($row['slug']);
             }
             $GLOBALS['mb_menu_snapshot'] = $out;
         }, 99998);
-        add_action('admin_bar_menu', function ($bar) {
-            $nodes = $bar->get_nodes();
-            $out = [];
-            foreach ((array) $nodes as $n) {
-                if (!empty($n->parent) || $n->id === 'top-secondary') continue;
-                $t = mb_clean_title($n->title);
-                if ($t === '' || in_array($n->id, ['menu-toggle'], true)) continue;
-                $kids = [];
-                foreach ($nodes as $c) {
-                    if ($c->parent === $n->id && mb_clean_title($c->title) !== '') $kids[] = ['key' => 'b:' . $c->id, 'title' => mb_clean_title($c->title)];
+
+        add_action('wp_before_admin_bar_render', function () {
+            global $wp_admin_bar;
+            if (!$wp_admin_bar) return;
+            $nodes = (array) $wp_admin_bar->get_nodes();
+            $kids = [];
+            foreach ($nodes as $n) $kids[(string) ($n->parent ? $n->parent : '')][] = $n;
+            $collect = function ($id) use (&$collect, &$kids) {
+                $r = [];
+                foreach (isset($kids[$id]) ? $kids[$id] : [] as $c) {
+                    $r[] = $c;
+                    foreach ($collect($c->id) as $d) $r[] = $d;
                 }
-                $out[] = ['key' => 'b:' . $n->id, 'title' => $t, 'children' => $kids];
+                return $r;
+            };
+            $roots = [];
+            foreach ($nodes as $n) {
+                $p = (string) ($n->parent ? $n->parent : '');
+                if (($p === '' && !in_array($n->id, ['top-secondary', 'root'], true)) || $p === 'top-secondary') $roots[] = $n;
             }
-            foreach ((array) $nodes as $n) {
-                if ($n->parent === 'top-secondary' && mb_clean_title($n->title) !== '') $out[] = ['key' => 'b:' . $n->id, 'title' => mb_clean_title($n->title), 'children' => []];
+            $out = [];
+            $seen = [];
+            foreach ($roots as $n) {
+                $children = [];
+                foreach ($collect($n->id) as $c) {
+                    $lbl = mb_bar_label($c->id, $c->title);
+                    if ($lbl === $c->id && empty($c->title)) continue;
+                    $children[] = ['key' => 'b:' . $c->id, 'title' => $lbl];
+                }
+                $out[] = ['key' => 'b:' . $n->id, 'title' => mb_bar_label($n->id, $n->title), 'children' => $children];
+                $seen[$n->id] = 1;
+            }
+            // موارد سمت بازدیدکننده که در پیشخوان دیده نمی‌شوند
+            foreach (['customize', 'edit', 'view', 'archive', 'preview', 'search'] as $id) {
+                if (!isset($seen[$id]) && !isset($nodes[$id])) $out[] = ['key' => 'b:' . $id, 'title' => mb_bar_label($id, '') . ' (فقط سمت سایت)', 'children' => []];
             }
             $GLOBALS['mb_bar_snapshot'] = $out;
         }, 99998);
@@ -413,17 +455,23 @@ function mb_apply_menus($o) {
     if ($hidden) {
         add_action('admin_menu', function () use ($hidden) {
             foreach ($hidden as $k) {
-                if (strpos($k, 'm:') === 0) { $slug = substr($k, 2); if ($slug !== MB_SLUG) remove_menu_page($slug); }
+                if ($k === 'm:options-general.php' || strpos($k, MB_SLUG) !== false) continue; // تنظیمات و منوی خود افزونه قابل مخفی‌شدن نیست
+                if (strpos($k, 'm:') === 0) remove_menu_page(substr($k, 2));
                 elseif (strpos($k, 's:') === 0) {
                     $parts = explode('|', substr($k, 2), 2);
-                    if (count($parts) === 2 && $parts[1] !== MB_SLUG) remove_submenu_page($parts[0], $parts[1]);
+                    if (count($parts) === 2) remove_submenu_page($parts[0], $parts[1]);
                 }
             }
         }, 99999);
     }
-    if ($bar) {
+    if ($bar && !$on_page) {
         add_action('admin_bar_menu', function ($b) use ($bar) {
             foreach ($bar as $k) if (strpos($k, 'b:') === 0) $b->remove_node(substr($k, 2));
+        }, 99999);
+        add_action('wp_before_admin_bar_render', function () use ($bar) {
+            global $wp_admin_bar;
+            if (!$wp_admin_bar) return;
+            foreach ($bar as $k) if (strpos($k, 'b:') === 0) $wp_admin_bar->remove_node(substr($k, 2));
         }, 99999);
     }
 }

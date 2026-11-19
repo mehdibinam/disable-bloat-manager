@@ -3,11 +3,11 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Version](https://img.shields.io/badge/version-2.2.0-blue)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4)
 ![License](https://img.shields.io/badge/license-Source--Available-orange)
-[![Download](https://img.shields.io/badge/download-v2.1.0-brightgreen)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)
+[![Download](https://img.shields.io/badge/download-v2.2.0-brightgreen)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)
 
 </div>
 
@@ -41,9 +41,16 @@
 - اگر نقشهای گوگل در سایت دارید، «غیرفعالسازی گوگل مپ» را روشن نکنید یا صفحهی آن را در استثناها بنویسید.
 - در صورت قفلشدن پیشخوان، پوشهی افزونه را موقتاً تغییر نام دهید یا خط `MB_DISABLE_LOGIN_URL` را به `wp-config.php` اضافه کنید.
 
+### تازه های نسخه ۲٫۲
+- منوی افزونه به **تنظیمات ← مدیریت کارایی** منتقل شد و سایدبار ساده تر شد.
+- ویرایشگر بلوک و ابزارک ها در یک بخش ادغام شدند.
+- فیلدهای عددی با دکمه های + و −، چیدمان دو ستونه با ارتفاع هم اندازه و دکمه «پاک کردن فهرست» برای فهرست سیاه و سفید.
+- شناسایی کامل موارد نوار بالا (لوگوی وردپرس، زیرمنوها، دیدگاه ها، به روز رسانی ها و ...) و تشخیص منوهای هم نام.
+- فهرست اعلان های مخفی شده با بازگردانی تکی، دریافت و وارد کردن تنظیمات (JSON) و جستجوی دوزبانه (فارسی و انگلیسی).
+- فونت گوگل و المنتور در بالای بخش «فونت و افزونه ها» قرار گرفتند.
 ### نصب
-۱. آخرین نسخه ([`disable-bloat-manager-v2.1.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)) را دانلود و از بخش **افزونه‌ها ← افزودن ← بارگذاری افزونه** نصب و فعال کنید.
-۲. از منوی **مدیریت کارایی** یا لینک «تنظیمات» کنار نام افزونه در صفحه‌ی افزونه‌ها وارد شوید.
+۱. آخرین نسخه ([`disable-bloat-manager-v2.2.zip`](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)) را دانلود و از بخش **افزونه‌ها ← افزودن ← بارگذاری افزونه** نصب و فعال کنید.
+۲. از **تنظیمات ← مدیریت کارایی** یا لینک «تنظیمات» کنار نام افزونه در صفحه ی افزونه ها وارد شوید.
 ۳. از **نمای کلی** روی «تنظیمات پیشنهادی» بزنید تا امکان‌های کم‌خطر روشن شوند، سپس هر بخش را بررسی کنید.
 
 > **مهم:** قبل از استفاده روی سایت اصلی، روی یک سایت آزمایشی امتحان کنید و از سایت پشتیبان بگیرید. امکان‌های برچسب‌خورده با «نیازمند بررسی» ممکن است ظاهر یا کارکرد سایت را عوض کنند.
@@ -57,20 +64,27 @@
 - اگر با «آدرس سفارشی صفحه‌ی ورود» قفل شدید، در `wp-config.php` این خط را اضافه کنید: `define( 'MB_DISABLE_LOGIN_URL', true );`
 
 ### بخش‌ها و امکانات
-| بخش | چه کاری می‌کند |
-|---|---|
-| سمت بازدیدکننده | حذف ایموجی، لینک‌ها و برچسب‌های اضافه‌ی سربرگ، اسکریپت‌های بلااستفاده، فید و نقشه‌ی سایت |
-| دیدگاه‌ها | بستن کامل یا جزئی دیدگاه، پینگ‌بک، Gravatar و پاک‌سازی خودکار اسپم |
-| پیشخوان | اعلان‌ها، ویجت‌ها، نوار بالا، Heartbeat، نسخه‌های پیشین، صفحه‌ی ورود |
-| ویرایشگر بلوک | غیرفعال‌سازی گوتنبرگ و بخش‌های اضافه‌ی آن |
-| ابزارک‌ها | حذف همه یا برخی ابزارک‌های هسته |
-| به‌روزرسانی‌ها | کنترل به‌روزرسانی خودکار هسته، افزونه‌ها و قالب‌ها |
-| ووکامرس | تبلیغات و ماژول‌های اضافه‌ی ووکامرس، Cart Fragments و اسکریپت‌ها |
-| فونت و افزونه‌ها | حذف یا میزبانی محلی فونت گوگل؛ پنهان‌کردن تبلیغات Jetpack، المنتور، Yoast و … |
-| هوش مصنوعی | خاموش‌کردن AI وردپرس (و صفحه‌ی اتصال‌دهنده‌ها) و AI افزونه‌ها |
-| امنیت | سخت‌سازی، هدرهای امنیتی، محافظت از ورود، آدرس ورود سفارشی و فایروال |
-| مسدودسازی دامنه‌ها | فهرست سیاه یا سفید دامنه، یادگیری خودکار دامنه‌های خارجی و قطع درخواست‌های کندکننده |
-| مخفی‌سازی منوها | مخفی‌کردن منوها و زیرمنوهای پیشخوان و نوار بالا با تشخیص خودکار افزونه‌های جدید |
+
+<table dir="rtl">
+<thead>
+<tr><th>بخش</th><th>چه کاری می‌کند</th></tr>
+</thead>
+<tbody>
+<tr><td>سمت بازدیدکننده</td><td>حذف ایموجی، لینک‌ها و برچسب‌های اضافه‌ی سربرگ، اسکریپت‌های بلااستفاده، فید و نقشه‌ی سایت</td></tr>
+<tr><td>دیدگاه‌ها</td><td>بستن کامل یا جزئی دیدگاه، پینگ‌بک، Gravatar و پاک‌سازی خودکار اسپم</td></tr>
+<tr><td>پیشخوان</td><td>اعلان‌ها، ویجت‌ها، نوار بالا، Heartbeat، نسخه‌های پیشین، صفحه‌ی ورود</td></tr>
+<tr><td>ویرایشگر بلوک</td><td>غیرفعال‌سازی گوتنبرگ و بخش‌های اضافه‌ی آن</td></tr>
+<tr><td>ابزارک‌ها</td><td>حذف همه یا برخی ابزارک‌های هسته</td></tr>
+<tr><td>به‌روزرسانی‌ها</td><td>کنترل به‌روزرسانی خودکار هسته، افزونه‌ها و قالب‌ها</td></tr>
+<tr><td>ووکامرس</td><td>تبلیغات و ماژول‌های اضافه‌ی ووکامرس، Cart Fragments و اسکریپت‌ها</td></tr>
+<tr><td>فونت و افزونه‌ها</td><td>حذف یا میزبانی محلی فونت گوگل؛ پنهان‌کردن تبلیغات Jetpack، المنتور، Yoast و …</td></tr>
+<tr><td>هوش مصنوعی</td><td>خاموش‌کردن AI وردپرس (و صفحه‌ی اتصال‌دهنده‌ها) و AI افزونه‌ها</td></tr>
+<tr><td>امنیت</td><td>سخت‌سازی، هدرهای امنیتی، محافظت از ورود، آدرس ورود سفارشی و فایروال</td></tr>
+<tr><td>مسدودسازی دامنه‌ها</td><td>فهرست سیاه یا سفید دامنه، یادگیری خودکار دامنه‌های خارجی و قطع درخواست‌های کندکننده</td></tr>
+<tr><td>مخفی‌سازی منوها</td><td>مخفی‌کردن منوها و زیرمنوهای پیشخوان و نوار بالا با تشخیص خودکار افزونه‌های جدید</td></tr>
+</tbody>
+</table>
+
 
 فهرست کامل (۱۶۱ امکان) با توضیح هر کدام: **[docs/FEATURES-Fa.md](docs/FEATURES-Fa.md)**
 
@@ -115,9 +129,16 @@ Everything is off by default (minimal by default) — you decide what runs. Sens
 - If your site uses Google Maps, don't enable "Disable Google Maps" or add that page to the exclusions.
 - If you get locked out of the dashboard, temporarily rename the plugin folder or add `MB_DISABLE_LOGIN_URL` to `wp-config.php`.
 
+### What's new in v2.2
+- The menu moved to **Settings → managing performance**, with a flat sidebar.
+- The block editor and widgets were merged into one section.
+- Number fields with +/− steppers, an equal-height two-column layout, and a "Clear list" button for the blacklist and whitelist.
+- Full admin-bar detection (WordPress logo, submenus, comments, updates, …) and detection of duplicate menu names.
+- A hidden-notices list with per-item restore, settings export/import (JSON), and bilingual (Persian/English) search.
+- Google Fonts and Elementor moved to the top of "Fonts & plugins".
 ### Installation
-1. Download the [latest release (`disable-bloat-manager-v2.1.zip`)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest), then upload it at **Plugins → Add New → Upload Plugin** and activate it.
-2. Open the **DeBloat** menu (or the "Setting" link on the Plugins page).
+1. Download the [latest release (`disable-bloat-manager-v2.2.zip`)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest), then upload it at **Plugins → Add New → Upload Plugin** and activate it.
+2. Open **Settings → managing performance** (or the "تنظیمات" link on the Plugins page).
 3. On the **Overview** page click "Recommended settings" to enable the low-risk options, then review each section.
 
 > **Important:** test on a staging site and keep a backup first. Options marked "needs review" can change your site's look or behavior.

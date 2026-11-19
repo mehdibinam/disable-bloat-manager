@@ -41,7 +41,13 @@ function mb_capitalp_options() {
 }
 /** تغییرات روی امکان‌های تعریف‌شده در فایل اصلی */
 function mb_patch_features(&$f) {
+    $kw = mb_keywords();
+    $steps = ['heartbeat_freq' => 5, 'autosave_seconds' => 30, 'fw_rate_max' => 10, 'fw_rate_window' => 10, 'fw_rate_block' => 30, 'login_limit_lock' => 5, 'login_limit_window' => 5, 'paginate_comments_num' => 5];
     foreach ($f as &$x) {
+        if (isset($kw[$x['id']])) $x['kw'] = $kw[$x['id']];
+        if (in_array($x['id'], ['net_blacklist', 'net_whitelist'], true)) $x['clearable'] = true;
+        if (!empty($x['fields'])) foreach ($x['fields'] as &$fl) { if (isset($steps[$fl['id']])) $fl['step'] = $steps[$fl['id']]; }
+        unset($fl);
         if (in_array($x['id'], ['login_slug', 'sec_hsts', 'fw_rate', 'core_updates_off', 'net_updates_off'], true)) $x['bulk'] = false;
         if ($x['id'] === 'dashboard_widgets') {
             $x['title'] = 'حذف ویجت‌های صفحه‌ی اصلی پیشخوان';
@@ -53,6 +59,23 @@ function mb_patch_features(&$f) {
             $x['fields'] = [['id' => 'capital_p_pick', 'type' => 'checks', 'default' => array_keys(mb_capitalp_options()), 'options_cb' => 'mb_capitalp_options']];
         }
     }
+}
+
+/** فونت‌های گوگل و المنتور در بخش «فونت و افزونه‌ها» بالاتر نشان داده می‌شوند */
+function mb_sort_features(&$f) {
+    foreach ($f as $i => &$x) $x['_i'] = $i;
+    unset($x);
+    $rank = function ($x) {
+        if ($x['cat'] !== 'thirdparty') return 0;
+        if ($x['section'] === 'فونت‌های گوگل') return 0;
+        if ($x['section'] === 'المنتور') return 1;
+        return 2;
+    };
+    usort($f, function ($a, $b) use ($rank) {
+        $ra = $rank($a); $rb = $rank($b);
+        return $ra === $rb ? $a['_i'] <=> $b['_i'] : $ra <=> $rb;
+    });
+    foreach ($f as &$x) unset($x['_i']);
 }
 
 function mb_features_more() {
@@ -122,9 +145,9 @@ function mb_features_more() {
     $f[] = mb_f('template_editor', 'editor', 'بخش‌های اضافه', 'غیرفعال‌کردن ویرایشگر قالب', 'ویرایش قالب (Template) از داخل ویرایشگر بلوک حذف می‌شود.');
 
     /* ───── ابزارک‌ها ───── */
-    $f[] = mb_f('widgets_all', 'widgets', 'ابزارک‌ها', 'غیرفعال‌کردن همه‌ی ابزارک‌های هسته', 'همه‌ی ابزارک‌های پیش‌فرض وردپرس (جستجو، آرشیو، دسته‌ها و ...) از دسترس خارج می‌شوند.', ['badge' => 'caution', 'overlaps' => ['widgets_pick'], 'warn' => 'اگر قالب شما از این ابزارک‌ها استفاده کند، نمایششان از بین می‌رود.']);
-    $f[] = mb_f('widgets_pick', 'widgets', 'ابزارک‌ها', 'غیرفعال‌کردن ابزارک‌های انتخابی', 'فقط ابزارک‌هایی که تیک می‌زنید حذف می‌شوند.', ['type' => 'checks', 'default' => [], 'options_cb' => 'mb_widget_options', 'overlaps' => ['widgets_all']]);
-    $f[] = mb_f('widget_support', 'widgets', 'ابزارک‌ها', 'حذف کامل پشتیبانی از ابزارک‌ها', 'منوی ابزارک‌ها از پیشخوان برداشته می‌شود و قالب دیگر سایدبار ابزارکی ندارد. فقط برای سایت‌های بدون سایدبار.', ['badge' => 'caution', 'warn' => 'قالب‌هایی که سایدبار دارند، آن بخش را خالی نشان می‌دهند.']);
+    $f[] = mb_f('widgets_all', 'editor', 'ابزارک‌ها', 'غیرفعال‌کردن همه‌ی ابزارک‌های هسته', 'همه‌ی ابزارک‌های پیش‌فرض وردپرس (جستجو، آرشیو، دسته‌ها و ...) از دسترس خارج می‌شوند.', ['badge' => 'caution', 'overlaps' => ['widgets_pick'], 'warn' => 'اگر قالب شما از این ابزارک‌ها استفاده کند، نمایششان از بین می‌رود.']);
+    $f[] = mb_f('widgets_pick', 'editor', 'ابزارک‌ها', 'غیرفعال‌کردن ابزارک‌های انتخابی', 'فقط ابزارک‌هایی که تیک می‌زنید حذف می‌شوند.', ['type' => 'checks', 'default' => [], 'options_cb' => 'mb_widget_options', 'overlaps' => ['widgets_all']]);
+    $f[] = mb_f('widget_support', 'editor', 'ابزارک‌ها', 'حذف کامل پشتیبانی از ابزارک‌ها', 'منوی ابزارک‌ها از پیشخوان برداشته می‌شود و قالب دیگر سایدبار ابزارکی ندارد. فقط برای سایت‌های بدون سایدبار.', ['badge' => 'caution', 'warn' => 'قالب‌هایی که سایدبار دارند، آن بخش را خالی نشان می‌دهند.']);
 
     /* ───── به‌روزرسانی‌ها ───── */
     $S = 'به‌روزرسانی خودکار';

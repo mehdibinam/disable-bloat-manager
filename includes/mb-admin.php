@@ -1,10 +1,10 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-function mb_admin_hook() { return 'toplevel_page_' . MB_SLUG; }
+function mb_admin_hook() { return 'settings_page_' . MB_SLUG; }
 
 add_action('admin_menu', function () {
-    add_menu_page('مدیریت کارایی وردپرس', 'مدیریت کارایی', 'manage_options', MB_SLUG, 'mb_render_page', 'dashicons-performance', 81);
+    add_options_page('مدیریت کارایی وردپرس', 'مدیریت کارایی', 'manage_options', MB_SLUG, 'mb_render_page');
 });
 
 // در صفحه‌ی خود افزونه، اعلان‌های بقیه‌ی افزونه‌ها نمایش داده نمی‌شود
@@ -51,6 +51,7 @@ add_action('admin_enqueue_scripts', function ($hook) {
         'repo'     => MB_REPO,
         'external' => mb_external_conflicts(),
         'learned'  => mb_learned_list(),
+        'hiddenNotices' => mb_hidden_notices_list(),
         'site'     => [
             'wp'      => get_bloginfo('version'),
             'php'     => PHP_VERSION,
@@ -119,4 +120,45 @@ add_action('wp_ajax_mb_bulk', function () {
     }
     update_option(MB_OPT, $opts);
     wp_send_json_success(['values' => mb_get_options()]);
+});
+
+/** اعلان‌هایی که کاربر فعلی مخفی کرده (برای بازگردانی تکی) */
+function mb_hidden_notices_list() {
+    $h = get_user_meta(get_current_user_id(), 'mb_hidden_notices', true);
+    if (!is_array($h)) return [];
+    $out = [];
+    foreach ($h as $k => $v) {
+        $out[] = ['hash' => (string) $k, 'text' => is_array($v) && isset($v['x']) ? (string) $v['x'] : '', 'time' => is_array($v) && isset($v['t']) ? (int) $v['t'] : (int) $v];
+    }
+    usort($out, function ($a, $b) { return $b['time'] <=> $a['time']; });
+    return $out;
+}
+
+add_action('wp_ajax_mb_notice_show', function () {
+    mb_ajax_guard();
+    $uid = get_current_user_id();
+    $h = get_user_meta($uid, 'mb_hidden_notices', true);
+    if (!is_array($h)) $h = [];
+    $hash = isset($_POST['hash']) ? sanitize_key(wp_unslash($_POST['hash'])) : '';
+    if ($hash === 'all') $h = []; else unset($h[$hash]);
+    update_user_meta($uid, 'mb_hidden_notices', $h);
+    wp_send_json_success(['hidden' => mb_hidden_notices_list()]);
+});
+
+add_action('wp_ajax_mb_import', function () {
+    mb_ajax_guard();
+    $raw = isset($_POST['data']) ? wp_unslash($_POST['data']) : '';
+    $d = json_decode($raw, true);
+    if (!is_array($d) || !isset($d['mb_settings']) || !is_array($d['mb_settings'])) wp_send_json_error(['message' => 'فایل معتبر نیست.'], 400);
+    $opts = mb_get_options();
+    $n = 0;
+    foreach ($d['mb_settings'] as $k => $v) {
+        $k = sanitize_key($k);
+        $c = mb_sanitize_value($k, $v);
+        if ($c === null) continue;
+        $opts[$k] = $c;
+        $n++;
+    }
+    update_option(MB_OPT, $opts);
+    wp_send_json_success(['values' => mb_get_options(), 'count' => $n]);
 });

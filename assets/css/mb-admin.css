@@ -206,3 +206,19 @@ a.mb-star:hover{filter:brightness(.97)}
   .mb-enter,.mb-modal,.mb-toast{animation:none}
   .mb-switch,.mb-switch::after,.mb-bar i,.mb-nav-i,.mb-dd-b svg{transition:none}
 }
+
+/* دکمه‌های + و − برای فیلد عددی */
+.mb-step{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.mb-sb{width:30px;border:0;background:var(--surface2);cursor:pointer;font-size:16px;line-height:1;color:var(--text);transition:background .15s}
+.mb-sb:hover{background:var(--primary);color:#fff}
+.mb-step .mb-num{border:0;border-radius:0;width:64px;height:32px;background:var(--surface);-moz-appearance:textfield;appearance:textfield}
+.mb-step .mb-num::-webkit-outer-spin-button,.mb-step .mb-num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.mb-step .mb-num:focus{box-shadow:none}
+.mb-step:focus-within{border-color:var(--on);box-shadow:0 0 0 3px color-mix(in srgb,var(--on) 18%,transparent)}
+.mb-fld{padding:4px 8px 4px 10px}
+/* لیست اعلان‌های مخفی‌شده */
+.mb-hn{margin-top:8px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.mb-hn-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;background:var(--surface2);font-weight:500}
+.mb-hn .mb-found-r span.mb-hn-t{font-family:inherit;font-size:12.5px;text-align:right;direction:rtl;color:var(--muted)}
+.mb-chip.locked span{opacity:.7;cursor:help;border-style:dashed}
+.mb-tools .mb-btn svg{width:16px;height:16px}

@@ -106,11 +106,11 @@ function mb_apply_more($o, $on) {
             echo '<style>.mb-hide-btn{font:12px inherit;padding:2px 10px;border-radius:6px;border:1px solid #c3c4c7;background:#fff;cursor:pointer;margin-left:6px}</style>';
             echo '<script>(function(c){function h(s){var x=5381,i;for(i=0;i<s.length;i++)x=((x<<5)+x+s.charCodeAt(i))|0;return "n"+(x>>>0).toString(36)}'
                . 'document.querySelectorAll(".notice,.updated,.error,.update-nag").forEach(function(el){if(el.classList.contains("mb-keep")||el.closest(".mb-app"))return;'
-               . 'var k=h((el.textContent||"").replace(/\s+/g," ").trim().slice(0,200));if(c.hidden.indexOf(k)>-1){el.style.display="none";return}'
+               . 'var tx=(el.textContent||"").replace(/\s+/g," ").trim();var k=h(tx.slice(0,200));if(c.hidden.indexOf(k)>-1){el.style.display="none";return}'
                . 'var bar=document.createElement("p"),b1=document.createElement("button"),b2=document.createElement("button");'
                . 'b1.type=b2.type="button";b1.className=b2.className="mb-hide-btn";b1.textContent="مخفی";b2.textContent="مخفی همیشگی";'
                . 'b1.onclick=function(){el.style.display="none"};'
-               . 'b2.onclick=function(){el.style.display="none";var f=new FormData();f.append("action","mb_hide_notice");f.append("nonce",c.nonce);f.append("hash",k);fetch(c.ajax,{method:"POST",credentials:"same-origin",body:f})};'
+               . 'b2.onclick=function(){el.style.display="none";var f=new FormData();f.append("action","mb_hide_notice");f.append("nonce",c.nonce);f.append("hash",k);f.append("text",tx.slice(0,160));fetch(c.ajax,{method:"POST",credentials:"same-origin",body:f})};'
                . 'bar.appendChild(b1);bar.appendChild(b2);el.appendChild(bar)})})(' . $cfg . ');</script>';
         });
     }
@@ -249,7 +249,8 @@ add_action('wp_ajax_mb_hide_notice', function () {
     $uid = get_current_user_id();
     $hidden = get_user_meta($uid, 'mb_hidden_notices', true);
     if (!is_array($hidden)) $hidden = [];
-    $hidden[$hash] = time();
+    $text = isset($_POST['text']) ? sanitize_text_field(wp_unslash($_POST['text'])) : '';
+    $hidden[$hash] = ['t' => time(), 'x' => mb_substr($text, 0, 160)];
     update_user_meta($uid, 'mb_hidden_notices', array_slice($hidden, -300, null, true));
     wp_send_json_success();
 });

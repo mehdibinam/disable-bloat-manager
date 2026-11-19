@@ -1,6 +1,6 @@
 # Full feature list
 
-> The plugin UI is Persian; this is the English version of the full feature list. Total features: **161** (v2.1.0).
+> The plugin UI is Persian; this is the English version of the full feature list. Total features: **161** (v2.2.0).
 > For the Persian version, see [FEATURES-Fa.md](FEATURES-Fa.md). A short English summary per category is in the main README.
 
 ## Visitor side
