@@ -60,7 +60,8 @@ a.mb-star:hover{filter:brightness(.97)}
 .mb-search input{width:100%;height:38px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);padding:0 36px 0 40px}
 .mb-search input:focus{outline:none;border-color:var(--on);box-shadow:0 0 0 3px color-mix(in srgb,var(--on) 18%,transparent)}
 .mb-search kbd{position:absolute;left:9px;top:50%;margin-top:-10px;font:11px/18px monospace;border:1px solid var(--line);border-radius:5px;padding:0 6px;color:var(--muted);background:var(--surface)}
-.mb-icon-btn{display:inline-grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);cursor:pointer;margin-right:auto;transition:border-color .15s}
+.mb-top-r{display:flex;align-items:center;gap:8px;margin-right:auto}
+.mb-icon-btn{position:relative;display:inline-grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);cursor:pointer;color:var(--text);text-decoration:none;transition:border-color .15s}
 .mb-icon-btn:hover{border-color:var(--primary)}
 
 /* محتوا */
@@ -88,7 +89,10 @@ a.mb-star:hover{filter:brightness(.97)}
 .mb-req{font-size:11.5px;color:var(--muted)}
 .mb-ctl{display:flex;align-items:center;gap:10px;flex:none}
 .mb-badge{font-size:11px;line-height:18px;border-radius:99px;padding:0 8px;white-space:nowrap}
-.mb-badge.rec{background:var(--ok-soft);color:var(--ok-ink)}
+.mb-badge.rec{background:#E3F4EA;color:#14774A}
+.mb-badge.danger{background:var(--danger-soft);color:var(--danger);font-weight:500}
+.mb-app[data-theme="dark"] .mb-badge.rec{background:#12372A;color:#6FD3A0}
+.mb-app[data-theme="dark"] .mb-badge.danger{color:#FF8A8C}
 .mb-badge.caution{background:var(--accent-soft);color:var(--accent-ink)}
 .mb-badge.ext{background:transparent;color:var(--accent-ink);border:1px dashed var(--accent);cursor:help}
 .mb-tip{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1;cursor:help;background:var(--surface2)}
@@ -222,3 +226,16 @@ a.mb-star:hover{filter:brightness(.97)}
 .mb-hn .mb-found-r span.mb-hn-t{font-family:inherit;font-size:12.5px;text-align:right;direction:rtl;color:var(--muted)}
 .mb-chip.locked span{opacity:.7;cursor:help;border-style:dashed}
 .mb-tools .mb-btn svg{width:16px;height:16px}
+
+/* دکمه‌های آیکنی و دکمه‌ی به‌روزرسانی */
+.mb-ibtn{display:inline-grid;place-items:center;width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);cursor:pointer;color:var(--text);transition:border-color .15s,background .15s,color .15s}
+.mb-ibtn svg{width:16px;height:16px}
+.mb-ibtn:hover{border-color:var(--primary)}
+.mb-ibtn.danger{color:var(--danger)}
+.mb-ibtn.danger:hover{background:var(--danger);border-color:var(--danger);color:#fff}
+.mb-app[data-theme="dark"] .mb-ibtn.danger{color:#FF8A8C}
+.mb-presets .mb-ibtn{margin-right:auto}
+.mb-hn-h .mb-ibtn,.mb-found-r .mb-ibtn{flex:none}
+.mb-upd{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+.mb-upd i{position:absolute;top:6px;left:6px;width:8px;height:8px;border-radius:50%;background:var(--danger);box-shadow:0 0 0 2px var(--accent-soft)}
+.mb-upd:hover{filter:brightness(.97);border-color:var(--accent)}

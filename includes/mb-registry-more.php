@@ -45,6 +45,7 @@ function mb_patch_features(&$f) {
     $steps = ['heartbeat_freq' => 5, 'autosave_seconds' => 30, 'fw_rate_max' => 10, 'fw_rate_window' => 10, 'fw_rate_block' => 30, 'login_limit_lock' => 5, 'login_limit_window' => 5, 'paginate_comments_num' => 5];
     foreach ($f as &$x) {
         if (isset($kw[$x['id']])) $x['kw'] = $kw[$x['id']];
+        if (in_array($x['id'], ['core_updates_off', 'auto_update_core', 'login_slug', 'sec_hsts', 'fw_rate', 'fw_signatures', 'net_updates_off', 'net_mode', 'sec_rest_access'], true)) $x['badge'] = 'danger';
         if (in_array($x['id'], ['net_blacklist', 'net_whitelist'], true)) $x['clearable'] = true;
         if (!empty($x['fields'])) foreach ($x['fields'] as &$fl) { if (isset($steps[$fl['id']])) $fl['step'] = $steps[$fl['id']]; }
         unset($fl);

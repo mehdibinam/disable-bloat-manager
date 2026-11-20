@@ -52,6 +52,7 @@ add_action('admin_enqueue_scripts', function ($hook) {
         'external' => mb_external_conflicts(),
         'learned'  => mb_learned_list(),
         'hiddenNotices' => mb_hidden_notices_list(),
+        'update'   => mb_update_state(),
         'site'     => [
             'wp'      => get_bloginfo('version'),
             'php'     => PHP_VERSION,
@@ -68,7 +69,7 @@ add_action('admin_print_footer_scripts', function () {
     if (!isset($_GET['page']) || $_GET['page'] !== MB_SLUG) return;
     $d = [
         'menus' => isset($GLOBALS['mb_menu_snapshot']) ? $GLOBALS['mb_menu_snapshot'] : [],
-        'bar'   => isset($GLOBALS['mb_bar_snapshot']) ? $GLOBALS['mb_bar_snapshot'] : [],
+        'bar'   => mb_bar_tree(),
     ];
     echo '<script>window.mbMenus=' . wp_json_encode($d) . ';</script>';
 }, 5);

@@ -1,64 +1,36 @@
-=== مدیریت کارایی وردپرس ===
-Contributors: Mehdibinam
-Tags: performance, disable, bloat, woocommerce, optimization, security, firewall
+=== مدیریت کارایی وردپرس (Disable Bloat Manager) ===
+Contributors: mehdibinam
+Tags: performance, bloat, security, woocommerce, persian
 Requires at least: 6.0
-Tested up to: 6.6
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.2.0
-License: MB Source-Available License v1.0
-License URI: https://github.com/mehdibinam/disable-bloat-manager/blob/main/LICENSE
+Stable tag: 2.3.0
+License: Source-available (see LICENSE)
 
-مدیریت کارایی وردپرس — مجموعه دسته بندی شده برای خاموش کردن بخش های اضافه وردپرس، ووکامرس و افزونه ها، همراه با امنیت و کنترل دامنه های بیرونی.
+مجموعه دسته بندی شده برای خاموش کردن بخش های اضافه وردپرس، ووکامرس و افزونه ها، همراه با امنیت و کنترل دامنه های بیرونی.
+A categorized toolbox to switch off unnecessary WordPress, WooCommerce and plugin features, with security and external-domain control.
 
 == Description ==
 
-**مدیریت کارایی وردپرس** (WordPress Performance Manager) یک جعبه ابزار RTL و کاملاً فارسی با ۱۶۱ امکان است که قابلیت های چندین افزونه بهینه سازی محبوب (Perfmatters، Disable Admin Notices، Featherweight، Disable Bloat for WP & Woo و ...) را در یک رابط مدرن گردآوری کرده است.
-
-امکانات اصلی نسخه ۲٫۲:
-
-* **رابط بهبودیافته:** منو به «تنظیمات ← مدیریت کارایی» منتقل شد، سایدبار ساده تر شد، ویرایشگر بلوک و ابزارک ها ادغام شدند، فیلدهای عددی با دکمه های + و − و چیدمان دو ستونه با ارتفاع هم اندازه.
-* **مدیریت پیشخوان:** شناسایی کامل موارد نوار بالا، فهرست اعلان های مخفی شده با بازگردانی تکی، و دکمه «پاک کردن فهرست» برای فهرست سیاه و سفید.
-* **جستجو و تنظیمات:** جستجوی دوزبانه (فارسی و انگلیسی)، دریافت و وارد کردن تنظیمات به صورت JSON، تنظیمات پیشنهادی و بازنشانی.
-* **هشدار تداخل:** تشخیص همپوشانی با افزونه هایی مانند Perfmatters، WP Rocket، Wordfence و Disable Bloat.
-* **امنیت و فایروال:** سخت سازی وردپرس، هدرهای امنیتی و HSTS، محافظت از ورود، آدرس سفارشی صفحه ورود، بررسی الگوهای حمله، بارگذاری فایل ها، اسکنرها، متدها و نرخ درخواست.
-* **مسدودسازی دامنه ها:** فهرست سیاه و سفید، یادگیری خودکار دامنه های خارجی، حذف فایل های خارجی، مسدودکردن fetch/XHR و قطع تله متری.
-* **سایر بخش ها:** سمت بازدیدکننده، دیدگاه ها، پیشخوان، به روز رسانی ها، ووکامرس، فونت های گوگل و هوش مصنوعی.
-
-ایده اولیه این پروژه با الهام از افزونه های زیر شکل گرفت: bad domain blocker, bloatoff utils, disable admin notices, Disable Bloat for WP & Woo Pro, disable everything, Featherweight, ghateino (https://github.com/shokrino/ghateino), perfmatters, wp widget disable.
-
-مزیت اصلی: فقط امکان های انتخابی اجرا می شوند، تماس های بیرونی کاهش می یابد، وابستگی به CDN کمتر می شود و عیب زدایی با تولتیپ ها و هشدارهای تداخل ساده تر است.
-
-فهرست کامل امکانات: [فارسی](docs/FEATURES-Fa.md) · [English](docs/FEATURES-En.md).
-
-تمام گزینه ها به صورت پیش فرض خاموش اند و دکمه «تنظیمات پیشنهادی» گزینه های ایمن را یکجا روشن می کند.
+161 options in 11 sections, Persian RTL interface, tooltips for every option, overlap warnings with other plugins, settings export/import, and update button powered by GitHub Releases.
+Source and documentation: https://github.com/mehdibinam/disable-bloat-manager
 
 == Installation ==
 
-1. آخرین نسخه را از [بخش Releases](https://github.com/mehdibinam/disable-bloat-manager/releases/latest) دانلود و از مسیر **افزونه ها ← افزودن ← بارگذاری افزونه** آپلود یا پوشه `disable-bloat-manager` را در `wp-content/plugins/` قرار دهید.
-2. افزونه را فعال کنید.
-3. از **تنظیمات ← مدیریت کارایی** وارد شوید و گزینه های دلخواه را روشن کنید.
-4. قبل از استفاده روی سایت اصلی، روی سایت آزمایشی امتحان و پشتیبان تهیه کنید.
+1. Upload the plugin ZIP via Plugins → Add New → Upload Plugin and activate it.
+2. Open Settings → مدیریت کارایی.
+3. On the Overview page click "Recommended settings", then review each section.
 
 == Changelog ==
 
+= 2.3.0 =
+* Update button from GitHub Releases, colored badges, icon buttons, fixed admin-bar hiding, uninstall.php.
+
 = 2.2.0 =
-* انتقال منو به «تنظیمات ← مدیریت کارایی»، سایدبار ساده تر، ادغام ویرایشگر بلوک و ابزارک ها.
-* فیلدهای عددی با دکمه های + و −، چیدمان دو ستونه با ارتفاع هم اندازه، دکمه «پاک کردن فهرست» برای فهرست سیاه و سفید.
-* شناسایی کامل موارد نوار بالا و تشخیص منوهای هم نام.
-* فهرست اعلان های مخفی شده با بازگردانی تکی، دریافت و وارد کردن تنظیمات (JSON)، جستجوی دوزبانه.
-* جابه جایی فونت گوگل و المنتور به بالای بخش «فونت و افزونه ها».
+* Menu under Settings, merged editor + widgets, number steppers, hidden-notices list, settings import/export, bilingual search.
 
 = 2.1.0 =
-* هدر بالا، دکمه «فعال سازی همه»، هشدار تداخل با سایر افزونه ها، یادگیری خودکار دامنه ها، README و مجوز.
-* مستندات کامل ۱۶۱ امکان (docs/FEATURES-Fa.md و docs/FEATURES-En.md).
-* تغییر مجوز به «MB Source-Available License v1.0» — کد قابل مطالعه، اما کپی، فورک و توزیع مجاز نیست.
+* Top header, bulk toggle, overlap warnings, automatic domain learning, README and license.
 
 = 2.0.0 =
-* بازنویسی کامل: امکانات دسته بندی شده، رابط فارسی راست به چپ.
-* اضافه شدن ماژول امنیت و فایروال و مسدودسازی دامنه ها.
-
-= 1.0.1 =
-* انتشار اولیه — ۸۰+ گزینه یکتا.
-
-= 1.0.0 =
-* انتشار نخست.
+* Full rewrite: categorized options, Persian RTL UI.

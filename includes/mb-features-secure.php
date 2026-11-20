@@ -234,6 +234,7 @@ function mb_firewall($o, $on, $ip, $allow) {
 
 /* ───────────── شبکه و دامنه‌ها ───────────── */
 function mb_net_blocked($url, $o) {
+    if (!empty($GLOBALS['mb_updating'])) return false; // خود به‌روزرسانی افزونه از گیت‌هاب
     $host = strtolower((string) wp_parse_url($url, PHP_URL_HOST));
     if ($host === '' || $host === 'localhost' || filter_var($host, FILTER_VALIDATE_IP) && !filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) return false;
     $site = strtolower((string) wp_parse_url(home_url(), PHP_URL_HOST));
@@ -255,6 +256,7 @@ function mb_apply_net($o, $on) {
     if ($on('net_timeout')) {
         $t = (int) $o['net_timeout_sec'];
         add_filter('http_request_args', function ($a) use ($t) {
+            if (!empty($GLOBALS['mb_updating'])) return $a;
             if (!isset($a['timeout']) || $a['timeout'] > $t) $a['timeout'] = $t;
             return $a;
         }, 99);
@@ -414,43 +416,15 @@ function mb_apply_menus($o) {
             $GLOBALS['mb_menu_snapshot'] = $out;
         }, 99998);
 
-        add_action('wp_before_admin_bar_render', function () {
-            global $wp_admin_bar;
-            if (!$wp_admin_bar) return;
-            $nodes = (array) $wp_admin_bar->get_nodes();
-            $kids = [];
-            foreach ($nodes as $n) $kids[(string) ($n->parent ? $n->parent : '')][] = $n;
-            $collect = function ($id) use (&$collect, &$kids) {
-                $r = [];
-                foreach (isset($kids[$id]) ? $kids[$id] : [] as $c) {
-                    $r[] = $c;
-                    foreach ($collect($c->id) as $d) $r[] = $d;
-                }
-                return $r;
-            };
-            $roots = [];
-            foreach ($nodes as $n) {
-                $p = (string) ($n->parent ? $n->parent : '');
-                if (($p === '' && !in_array($n->id, ['top-secondary', 'root'], true)) || $p === 'top-secondary') $roots[] = $n;
+        // موارد نوار بالا را در دو مرحله جمع می‌کنیم تا موارد دیرهنگام و موارد مخفی‌شده هم در فهرست بمانند
+        $GLOBALS['mb_bar_nodes'] = [];
+        $gather = function ($b) {
+            foreach ((array) $b->get_nodes() as $n) {
+                if (!isset($GLOBALS['mb_bar_nodes'][$n->id])) $GLOBALS['mb_bar_nodes'][$n->id] = ['p' => (string) ($n->parent ? $n->parent : ''), 't' => $n->title];
             }
-            $out = [];
-            $seen = [];
-            foreach ($roots as $n) {
-                $children = [];
-                foreach ($collect($n->id) as $c) {
-                    $lbl = mb_bar_label($c->id, $c->title);
-                    if ($lbl === $c->id && empty($c->title)) continue;
-                    $children[] = ['key' => 'b:' . $c->id, 'title' => $lbl];
-                }
-                $out[] = ['key' => 'b:' . $n->id, 'title' => mb_bar_label($n->id, $n->title), 'children' => $children];
-                $seen[$n->id] = 1;
-            }
-            // موارد سمت بازدیدکننده که در پیشخوان دیده نمی‌شوند
-            foreach (['customize', 'edit', 'view', 'archive', 'preview', 'search'] as $id) {
-                if (!isset($seen[$id]) && !isset($nodes[$id])) $out[] = ['key' => 'b:' . $id, 'title' => mb_bar_label($id, '') . ' (فقط سمت سایت)', 'children' => []];
-            }
-            $GLOBALS['mb_bar_snapshot'] = $out;
-        }, 99998);
+        };
+        add_action('admin_bar_menu', $gather, 99998);
+        add_action('wp_before_admin_bar_render', function () use ($gather) { global $wp_admin_bar; if ($wp_admin_bar) $gather($wp_admin_bar); }, 1);
     }
     if ($hidden) {
         add_action('admin_menu', function () use ($hidden) {
@@ -464,14 +438,62 @@ function mb_apply_menus($o) {
             }
         }, 99999);
     }
-    if ($bar && !$on_page) {
-        add_action('admin_bar_menu', function ($b) use ($bar) {
-            foreach ($bar as $k) if (strpos($k, 'b:') === 0) $b->remove_node(substr($k, 2));
-        }, 99999);
+    if ($bar) {
+        add_action('admin_bar_menu', function ($b) use ($bar) { mb_bar_hide($b, $bar); }, 99999);
         add_action('wp_before_admin_bar_render', function () use ($bar) {
             global $wp_admin_bar;
-            if (!$wp_admin_bar) return;
-            foreach ($bar as $k) if (strpos($k, 'b:') === 0) $wp_admin_bar->remove_node(substr($k, 2));
+            if ($wp_admin_bar) mb_bar_hide($wp_admin_bar, $bar);
         }, 99999);
     }
+}
+
+/** مورد انتخاب‌شده و همه‌ی زیرمجموعه‌هایش را از نوار بالا برمی‌دارد */
+function mb_bar_hide($bar, $keys) {
+    $nodes = (array) $bar->get_nodes();
+    foreach ((array) $keys as $k) {
+        if (strpos($k, 'b:') !== 0) continue;
+        $id = substr($k, 2);
+        $all = [];
+        $stack = [$id];
+        while ($stack) {
+            $cur = array_pop($stack);
+            foreach ($nodes as $n) {
+                if ((string) $n->parent === (string) $cur && !in_array($n->id, $all, true)) { $all[] = $n->id; $stack[] = $n->id; }
+            }
+        }
+        foreach ($all as $cid) $bar->remove_node($cid);
+        $bar->remove_node($id);
+    }
+}
+
+/** درخت موارد نوار بالا برای نمایش در پنل */
+function mb_bar_tree() {
+    $nodes = isset($GLOBALS['mb_bar_nodes']) ? (array) $GLOBALS['mb_bar_nodes'] : [];
+    $kids = [];
+    foreach ($nodes as $id => $n) $kids[$n['p']][] = $id;
+    $collect = function ($id) use (&$collect, &$kids) {
+        $r = [];
+        foreach (isset($kids[$id]) ? $kids[$id] : [] as $c) { $r[] = $c; foreach ($collect($c) as $d) $r[] = $d; }
+        return $r;
+    };
+    $roots = [];
+    foreach ($nodes as $id => $n) {
+        if (($n['p'] === '' && !in_array($id, ['top-secondary', 'root'], true)) || $n['p'] === 'top-secondary') $roots[] = $id;
+    }
+    $out = [];
+    foreach ($roots as $id) {
+        $children = [];
+        foreach ($collect($id) as $cid) {
+            $title = $nodes[$cid]['t'];
+            $lbl = mb_bar_label($cid, $title);
+            if ($lbl === $cid && empty($title)) continue; // گره‌ی گروهی بدون عنوان
+            $children[] = ['key' => 'b:' . $cid, 'title' => $lbl];
+        }
+        $out[] = ['key' => 'b:' . $id, 'title' => mb_bar_label($id, $nodes[$id]['t']), 'children' => $children];
+    }
+    // موارد سمت بازدیدکننده که در پیشخوان دیده نمی‌شوند
+    foreach (['customize', 'edit', 'view', 'archive', 'preview', 'search'] as $id) {
+        if (!isset($nodes[$id])) $out[] = ['key' => 'b:' . $id, 'title' => mb_bar_label($id, '') . ' (فقط سمت سایت)', 'children' => []];
+    }
+    return $out;
 }

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: مدیریت کارایی وردپرس
  * Description: مجموعه‌ی دسته‌بندی‌شده برای غیرفعال‌کردن بخش‌های اضافه‌ی وردپرس، ووکامرس و افزونه‌ها.
- * Version: 2.2.0
+ * Version: 2.3.0
  * Author: Mehdi Binam
  * Author URI: https://t.me/Mehdibinam
  * Requires at least: 6.0
@@ -12,9 +12,9 @@
  */
 if (!defined('ABSPATH')) exit;
 
-define('MB_VERSION', '2.2.0');
-// آدرس مخزن گیت‌هاب (بعداً پر می‌شود). مثال: https://github.com/USER/disable-bloat-manager
-define('MB_REPO', '');
+define('MB_VERSION', '2.3.0');
+// آدرس مخزن گیت‌هاب (برای دکمه‌ی ستاره، ثبت گزارش و به‌روزرسانی)
+define('MB_REPO', 'https://github.com/mehdibinam/disable-bloat-manager');
 define('MB_FILE', __FILE__);
 define('MB_DIR', plugin_dir_path(__FILE__));
 define('MB_URL', plugin_dir_url(__FILE__));
@@ -31,6 +31,7 @@ require_once MB_DIR . 'includes/mb-features.php';
 require_once MB_DIR . 'includes/mb-features-more.php';
 require_once MB_DIR . 'includes/mb-features-secure.php';
 require_once MB_DIR . 'includes/mb-admin.php';
+require_once MB_DIR . 'includes/mb-updater.php';
 
 register_activation_hook(__FILE__, function () {
     if (get_option(MB_OPT, null) === null) {

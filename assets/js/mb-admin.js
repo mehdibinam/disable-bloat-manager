@@ -49,6 +49,8 @@
     star: '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.2 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/>',
     download: '<path d="M12 3v12M7 11l5 5 5-5M4 21h16"/>',
     upload: '<path d="M12 21V9M7 13l5-5 5 5M4 3h16"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    cloud: '<path d="M20 16.5A4.5 4.5 0 0 0 17.5 8h-1.3A6 6 0 1 0 4 14.9"/><path d="M12 12v9M8 17l4 4 4-4"/>',
     chat: '<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.6-.8L3 21l1.9-5.1A8.4 8.4 0 1 1 21 11.5z"/>',
     shieldlogo: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'
   };
@@ -186,6 +188,7 @@
     var h = '';
     if (f.badge === 'rec') h += '<span class="mb-badge rec">پیشنهادی</span>';
     if (f.badge === 'caution') h += '<span class="mb-badge caution">نیازمند بررسی</span>';
+    if (f.badge === 'danger') h += '<span class="mb-badge danger">حساسیت بالا</span>';
     var ext = (D.external || {})[f.id];
     if (ext && ext.length) {
       h += '<span class="mb-badge ext" tabindex="0" data-tip="این امکان همزمان توسط ' + esc(ext.join('، ')) + ' هم اجرا می‌شود. بهتر است فقط در یکی از آن‌ها روشن باشد تا تداخل پیش نیاید.">در ' + esc(ext.join('، ')) + ' هم فعال است</span>';
@@ -211,7 +214,7 @@
     }).join('') + '</div>' : '';
     if (fld.clearable) pr = '<div class="mb-presets">' + (presets.length ? '<span class="mb-unit">افزودن سریع:</span>' + presets.map(function (p, i) {
       return '<button type="button" class="mb-btn sm" data-preset="' + id + '" data-pi="' + i + '">' + esc(p.label) + '</button>';
-    }).join('') : '') + '<button type="button" class="mb-btn sm danger" data-clear="' + id + '">پاک‌کردن فهرست</button></div>';
+    }).join('') : '') + '<button type="button" class="mb-ibtn danger" data-clear="' + id + '" data-tip="پاک‌کردن فهرست" aria-label="پاک‌کردن فهرست">' + icon('trash') + '</button></div>';
     return pr + '<textarea class="mb-ta" dir="ltr" rows="' + (fld.rows || 5) + '" data-ta="' + id + '" placeholder="' + esc(fld.placeholder || '') + '" aria-label="' + esc(f.title) + '">' + esc(values[id] || '') + '</textarea>';
   }
   function treeHtml(f) {
@@ -228,7 +231,7 @@
     var list = D.learned || [];
     if (!list.length) return '<div class="mb-empty">هنوز دامنه‌ای شناسایی نشده. با بازدید از صفحه‌های سایت، این فهرست خودکار پر می‌شود.</div>';
     return '<div class="mb-found">' + list.map(function (it) {
-      return '<div class="mb-found-r"><span dir="ltr">' + esc(it.host) + '</span><small>' + fa(it.count) + ' بار</small><button type="button" class="mb-btn sm" data-add="' + esc(it.host) + '" data-to="' + f.target + '">افزودن به فهرست سیاه</button></div>';
+      return '<div class="mb-found-r"><span dir="ltr">' + esc(it.host) + '</span><small>' + fa(it.count) + ' بار</small><button type="button" class="mb-ibtn" data-add="' + esc(it.host) + '" data-to="' + f.target + '" data-tip="افزودن به فهرست سیاه" aria-label="افزودن به فهرست سیاه">' + icon('plus') + '</button></div>';
     }).join('') + '</div>';
   }
   function fieldHtml(f, fld) {
@@ -242,9 +245,9 @@
   function noticesHtml() {
     var list = D.hiddenNotices || [];
     if (!list.length) return '';
-    return '<div class="mb-hn"><div class="mb-hn-h"><span>اعلان‌های مخفی‌شده (' + fa(list.length) + ')</span><button type="button" class="mb-btn sm" data-unhide="all">نمایش همه</button></div>' +
+    return '<div class="mb-hn"><div class="mb-hn-h"><span>اعلان‌های مخفی‌شده (' + fa(list.length) + ')</span><button type="button" class="mb-ibtn" data-unhide="all" data-tip="نمایش همه" aria-label="نمایش همه">' + icon('eye') + '</button></div>' +
       list.map(function (n) {
-        return '<div class="mb-found-r"><span class="mb-hn-t">' + esc(n.text || 'اعلان (متنی ذخیره نشده است)') + '</span><button type="button" class="mb-btn sm" data-unhide="' + esc(n.hash) + '">نمایش دوباره</button></div>';
+        return '<div class="mb-found-r"><span class="mb-hn-t">' + esc(n.text || 'اعلان (متنی ذخیره نشده است)') + '</span><button type="button" class="mb-ibtn" data-unhide="' + esc(n.hash) + '" data-tip="نمایش دوباره" aria-label="نمایش دوباره">' + icon('eye') + '</button></div>';
       }).join('') + '</div>';
   }
   function extraHtml(f) {
@@ -275,7 +278,7 @@
       }).join('');
       ctl = '<select class="mb-sel" data-sel="' + f.id + '" aria-label="' + esc(f.title) + '"' + (disabled ? ' disabled' : '') + '>' + opts + '</select>';
     } else if (f.type === 'learned') {
-      ctl = '<button type="button" class="mb-btn sm" data-learn-clear>' + esc(f.button || 'پاک‌کردن') + '</button>';
+      ctl = '<button type="button" class="mb-ibtn danger" data-learn-clear data-tip="' + esc(f.button || 'پاک‌کردن') + '" aria-label="' + esc(f.button || 'پاک‌کردن') + '">' + icon('trash') + '</button>';
     } else if (f.type === 'checks' || f.type === 'textarea' || f.type === 'tree' || f.type === 'text') {
       ctl = '';
     } else {
@@ -321,9 +324,14 @@
       '<nav class="mb-nav" aria-label="بخش‌ها">' + nav + '</nav>' +
       '<div class="mb-side-foot">' + star + '<span class="mb-ver">نسخه‌ی ' + fa(D.version) + '</span></div></aside>';
   }
+  function updateBtn() {
+    var u = D.update;
+    if (!u || !u.available || !u.url) return '';
+    return '<a class="mb-icon-btn mb-upd" href="' + esc(u.url) + '" data-tip="نسخه‌ی جدید ' + esc(u.version) + ' آماده است. برای به‌روزرسانی کلیک کنید." aria-label="به‌روزرسانی به نسخه‌ی ' + esc(u.version) + '">' + icon('cloud') + '<i></i></a>';
+  }
   function topHtml() {
     return '<header class="mb-top"><div class="mb-search">' + icon('search') + '<input type="search" id="mb-q" placeholder="جستجوی تنظیمات" value="' + esc(query) + '" aria-label="جستجوی تنظیمات"><kbd>/</kbd></div>' +
-      '<button class="mb-icon-btn" id="mb-theme" aria-label="تغییر حالت روشن و تیره"></button></header>';
+      '<div class="mb-top-r">' + updateBtn() + '<button class="mb-icon-btn" id="mb-theme" aria-label="تغییر حالت روشن و تیره"></button></div></header>';
   }
   function bulkables(id) {
     return feats.filter(function (f) { return f.cat === id && f.type === 'toggle' && f.bulk !== false && f.available !== false; });
@@ -491,10 +499,10 @@
       };
       if (allOn) return go1();
       var off = list.filter(function (x) { return !isOn(x); });
-      var caution = off.filter(function (x) { return x.badge === 'caution'; }).length;
+      var caution = off.filter(function (x) { return x.badge === 'caution' || x.badge === 'danger'; }).length;
       return confirmBox('فعال‌سازی همه', [
         fa(off.length) + ' امکان در این بخش روشن می‌شود.',
-        caution ? fa(caution) + ' مورد از آن‌ها «نیازمند بررسی» هستند و ممکن است ظاهر یا کارکرد سایت را تغییر بدهند. بعد از اعمال، سایت را یک بار ببینید.' : ''
+        caution ? fa(caution) + ' مورد از آن‌ها «نیازمند بررسی» یا «حساسیت بالا» هستند و ممکن است ظاهر یا کارکرد سایت را تغییر بدهند. بعد از اعمال، سایت را یک بار ببینید.' : ''
       ], 'روشن شود', go1);
     }
     if (t.hasAttribute('data-preset')) {
@@ -633,6 +641,13 @@
       if (q) q.focus();
     }
   });
+
+  /* بررسی نسخه‌ی جدید در پس‌زمینه (اگر کش قدیمی بود)؛ هیچ‌وقت صفحه را معطل نمی‌کند */
+  if (D.update && D.update.stale) {
+    post('mb_update_check').then(function (d) {
+      if (d && d.update) { D.update = d.update; var r = root.querySelector('.mb-top-r'); if (r) { var old = r.querySelector('.mb-upd'); if (old) old.remove(); r.insertAdjacentHTML('afterbegin', updateBtn()); } }
+    }).catch(function () {});
+  }
 
   var h = (location.hash || '').replace('#', '');
   if (h && catOf(h)) route = h;
