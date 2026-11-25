@@ -58,5 +58,18 @@ function mb_keywords() {
         'net_block_runtime' => 'block fetch xhr runtime browser requests javascript', 'net_mixpanel' => 'mixpanel analytics tracking block', 'net_telemetry' => 'telemetry wordpress.org news events stats',
         'net_updates_off' => 'update checks api.wordpress.org disable', 'net_timeout' => 'timeout http requests slow external',
         'menus_hide' => 'hide admin menu submenu sidebar menus', 'menus_bar' => 'hide admin bar toolbar items nodes',
+        'lazy_load_off' => 'lazy load loading lazy images native', 'speculative_off' => 'speculative loading prefetch prerender speculation rules', 'srcset_off' => 'srcset responsive images sizes',
+        'wp_cron_off' => 'wp-cron cron disable_wp_cron scheduled tasks', 'login_bg' => 'login background image wallpaper', 'elementor_search_param' => 'elementor e_search_props search parameter url',
+        'cf7_smart' => 'contact form 7 cf7 smart load shortcode only', 'comment_url_field' => 'comment website url field remove form', 'comment_honeypot' => 'honeypot time trap bot spam comment',
+        'comment_persian_name' => 'persian name farsi comment author', 'blocks_disabled' => 'block manager disable blocks gutenberg inserter unused blocks',
+        'wc_default_styles_off' => 'woocommerce default styles css disable hello elementor', 'wc_hide_sku' => 'sku product code hide woocommerce', 'wc_product_tags_off' => 'product tags woocommerce disable',
+        'wc_coupons' => 'coupons discount codes woocommerce disable', 'wc_checkout_fields' => 'checkout fields remove billing company address', 'wc_no_payment' => 'payment skip checkout without payment',
+        'dup_posts' => 'duplicate clone copy posts pages', 'dup_menus' => 'duplicate clone copy menus navigation', 'thumb_column' => 'thumbnail column featured image list',
+        'page_categories' => 'page categories taxonomy pages', 'editor_height' => 'editor height tinymce classic', 'elementor_tinymce' => 'elementor templates tinymce classic editor shortcode',
+        'ajax_publish' => 'ajax publish update save without reload classic editor', 'post_export' => 'export xml single post page wxr', 'media_mode' => 'media library infinite scroll pagination load more per page',
+        'vazir_front' => 'vazir vazirmatn font persian frontend', 'reading_resume' => 'reading position resume scroll continue', 'copy_credit' => 'copy source credit copyright copied text',
+        'elementor_clickable' => 'elementor clickable section column container link', 'iran_phone_elementor' => 'iran mobile phone validation elementor pro form',
+        'iran_phone_gf' => 'iran mobile phone validation gravity forms', 'admin_palette' => 'admin color scheme palette custom colors', 'plugin_logo_column' => 'plugin logo icon column plugins list',
+        'mb_dash_widget' => 'dashboard widget summary plugin stats',
     ];
 }

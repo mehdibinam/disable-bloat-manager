@@ -54,6 +54,8 @@ function mb_sanitize_value($id, $value) {
         return max($min, min($max, (int) $value));
     }
     if ($type === 'text') return sanitize_text_field((string) $value);
+    if ($type === 'image') return esc_url_raw((string) $value);
+    if ($type === 'color') { $c = sanitize_hex_color((string) $value); return $c ? $c : $def['default']; }
     if ($type === 'textarea') {
         $lines = preg_split('/\r\n|\r|\n/', (string) $value);
         $out = [];

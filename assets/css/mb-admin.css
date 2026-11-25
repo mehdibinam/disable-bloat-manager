@@ -239,3 +239,45 @@ a.mb-star:hover{filter:brightness(.97)}
 .mb-upd{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
 .mb-upd i{position:absolute;top:6px;left:6px;width:8px;height:8px;border-radius:50%;background:var(--danger);box-shadow:0 0 0 2px var(--accent-soft)}
 .mb-upd:hover{filter:brightness(.97);border-color:var(--accent)}
+
+/* پیشنهادهای دامنه: سه ستونه با دکمه‌ی قرمز */
+.mb-found{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);max-height:320px;overflow-y:auto}
+.mb-found .mb-found-r{background:var(--surface);border:0;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"h b" "c b";gap:0 8px;padding:8px 12px;align-items:center}
+.mb-found .mb-found-r span{grid-area:h;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mb-found .mb-found-r small{grid-area:c}
+.mb-block{grid-area:b;height:28px;padding:0 12px;border:0;border-radius:8px;background:var(--danger);color:#fff;font-weight:500;cursor:pointer;transition:filter .15s}
+.mb-block:hover{filter:brightness(1.12)}
+.mb-hn .mb-found-r{display:flex;background:none}
+@media (max-width:1100px){.mb-found{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.mb-found{grid-template-columns:1fr}}
+
+/* زیرگزینه‌های غیرفعال */
+.is-disabled{opacity:.45}
+.is-disabled *,.mb-fld.is-disabled input{cursor:not-allowed}
+.mb-chips.is-disabled .mb-chip span{cursor:not-allowed}
+.mb-dd-b[disabled],.mb-sb[disabled]{cursor:not-allowed;opacity:.6}
+.mb-app input[disabled],.mb-app textarea[disabled],.mb-app select[disabled]{opacity:.6}
+
+/* تصویر و رنگ */
+.mb-img{display:flex;align-items:center;gap:10px;padding:0}
+.mb-img img{width:64px;height:40px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.mb-img-ph{display:grid;place-items:center;width:64px;height:40px;border-radius:8px;border:1px dashed var(--line);color:var(--muted)}
+.mb-clr{width:36px;height:30px;padding:0;border:1px solid var(--line);border-radius:8px;background:none;cursor:pointer}
+
+/* گزارش تأثیر */
+.mb-impact{margin-bottom:16px}
+.mb-imp-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.mb-imp{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.mb-imp b{display:block;font-size:22px;line-height:1.3}
+.mb-imp span{color:var(--muted);font-size:12px}
+.mb-spark{display:flex;align-items:flex-end;gap:4px;height:60px}
+.mb-spark i{flex:1;background:var(--on);border-radius:4px 4px 0 0;transition:height .3s}
+.mb-spark i.z{background:var(--line)}
+@media (max-width:960px){.mb-imp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* انیمیشن نرم: جابه‌جایی منو و تغییر حالت تیره/روشن */
+.mb-leave{opacity:0;transform:translateY(-6px);transition:opacity .13s ease,transform .13s ease}
+.mb-theming,.mb-theming *{transition:background-color .35s ease,color .35s ease,border-color .35s ease,box-shadow .35s ease,fill .35s ease,stroke .35s ease!important}
+.mb-icon-btn svg{transition:transform .35s ease}
+#mb-theme:active svg{transform:rotate(25deg) scale(.9)}
+@media (prefers-reduced-motion:reduce){.mb-leave,.mb-theming,.mb-theming *{transition:none!important}}

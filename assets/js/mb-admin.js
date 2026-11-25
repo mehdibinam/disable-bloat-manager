@@ -51,6 +51,9 @@
     upload: '<path d="M12 21V9M7 13l5-5 5 5M4 3h16"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     cloud: '<path d="M20 16.5A4.5 4.5 0 0 0 17.5 8h-1.3A6 6 0 1 0 4 14.9"/><path d="M12 12v9M8 17l4 4 4-4"/>',
+    image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="M21 16l-5-5-8 8"/>',
+    x: '<path d="M6 6l12 12M18 6L6 18"/>',
+    chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
     chat: '<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.6-.8L3 21l1.9-5.1A8.4 8.4 0 1 1 21 11.5z"/>',
     shieldlogo: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'
   };
@@ -69,7 +72,7 @@
     if (f.type === 'learned') return false;
     return String(v) === '1';
   }
-  function isWide(f) { return f.type === 'tree'; }
+  function isWide(f) { return f.type === 'tree' || !!f.wide; }
   function catOf(id) {
     var found = null;
     D.groups.forEach(function (g) { g.items.forEach(function (c) { if (c.id === id) found = c; }); });
@@ -198,24 +201,29 @@
   function chip(attr, id, val, label, checked, cls) {
     return '<label class="mb-chip' + (cls ? ' ' + cls : '') + '"><input type="checkbox" ' + attr + '="' + esc(id) + '" value="' + esc(val) + '"' + (checked ? ' checked' : '') + '><span>' + esc(label) + '</span></label>';
   }
-  function checksHtml(id, opts, dropdown) {
+  function checksHtml(id, opts, dropdown, off) {
     var cur = values[id] || [];
-    var chips = '<div class="mb-chips">' + Object.keys(opts).map(function (k) { return chip('data-chk', id, k, opts[k], cur.indexOf(k) > -1); }).join('') + '</div>';
+    var dis = off ? ' disabled' : '';
+    var chips = '<div class="mb-chips' + (off ? ' is-disabled' : '') + '">' + Object.keys(opts).map(function (k) {
+      return chip('data-chk', id, k, opts[k], cur.indexOf(k) > -1).replace('<input ', '<input' + dis + ' ');
+    }).join('') + '</div>';
     if (!dropdown) return chips;
-    var open = !!ddOpen[id];
+    var open = !!ddOpen[id] && !off;
     var n = cur.length;
-    return '<button type="button" class="mb-dd-b" data-dd="' + id + '" aria-expanded="' + open + '"><span>' + (n ? fa(n) + ' مورد انتخاب شده' : 'هیچ موردی انتخاب نشده') + '</span>' + icon('chevron') + '</button>' +
+    return '<button type="button" class="mb-dd-b" data-dd="' + id + '" aria-expanded="' + open + '"' + dis + '><span>' + (n ? fa(n) + ' مورد انتخاب شده' : 'هیچ موردی انتخاب نشده') + '</span>' + icon('chevron') + '</button>' +
       (open ? '<div class="mb-dd-p">' + chips + '</div>' : '');
   }
-  function taHtml(f, fld) {
+  function taHtml(f, fld, off) {
     var id = fld.id, presets = fld.presets || [];
-    var pr = presets.length ? '<div class="mb-presets"><span class="mb-unit">افزودن سریع:</span>' + presets.map(function (p, i) {
+    var pbtn = presets.map(function (p, i) {
       return '<button type="button" class="mb-btn sm" data-preset="' + id + '" data-pi="' + i + '">' + esc(p.label) + '</button>';
-    }).join('') + '</div>' : '';
-    if (fld.clearable) pr = '<div class="mb-presets">' + (presets.length ? '<span class="mb-unit">افزودن سریع:</span>' + presets.map(function (p, i) {
-      return '<button type="button" class="mb-btn sm" data-preset="' + id + '" data-pi="' + i + '">' + esc(p.label) + '</button>';
-    }).join('') : '') + '<button type="button" class="mb-ibtn danger" data-clear="' + id + '" data-tip="پاک‌کردن فهرست" aria-label="پاک‌کردن فهرست">' + icon('trash') + '</button></div>';
-    return pr + '<textarea class="mb-ta" dir="ltr" rows="' + (fld.rows || 5) + '" data-ta="' + id + '" placeholder="' + esc(fld.placeholder || '') + '" aria-label="' + esc(f.title) + '">' + esc(values[id] || '') + '</textarea>';
+    }).join('');
+    var pr = '';
+    if (presets.length || fld.clearable) {
+      pr = '<div class="mb-presets">' + (presets.length ? '<span class="mb-unit">افزودن سریع:</span>' + pbtn : '') +
+        (fld.clearable ? '<button type="button" class="mb-ibtn danger" data-clear="' + id + '" data-tip="پاک‌کردن فهرست" aria-label="پاک‌کردن فهرست">' + icon('trash') + '</button>' : '') + '</div>';
+    }
+    return pr + '<textarea class="mb-ta" dir="ltr" rows="' + (fld.rows || 5) + '" data-ta="' + id + '" placeholder="' + esc(fld.placeholder || '') + '" aria-label="' + esc(f.title) + '"' + (off ? ' disabled' : '') + '>' + esc(values[id] || '') + '</textarea>';
   }
   function treeHtml(f) {
     var list = (D.menus && D.menus[f.source]) || [];
@@ -231,16 +239,34 @@
     var list = D.learned || [];
     if (!list.length) return '<div class="mb-empty">هنوز دامنه‌ای شناسایی نشده. با بازدید از صفحه‌های سایت، این فهرست خودکار پر می‌شود.</div>';
     return '<div class="mb-found">' + list.map(function (it) {
-      return '<div class="mb-found-r"><span dir="ltr">' + esc(it.host) + '</span><small>' + fa(it.count) + ' بار</small><button type="button" class="mb-ibtn" data-add="' + esc(it.host) + '" data-to="' + f.target + '" data-tip="افزودن به فهرست سیاه" aria-label="افزودن به فهرست سیاه">' + icon('plus') + '</button></div>';
+      return '<div class="mb-found-r"><span dir="ltr">' + esc(it.host) + '</span><small>' + fa(it.count) + ' بار</small><button type="button" class="mb-block" data-add="' + esc(it.host) + '" data-to="' + f.target + '">مسدود کردن</button></div>';
     }).join('') + '</div>';
   }
-  function fieldHtml(f, fld) {
-    if (fld.type === 'text') {
-      return '<label class="mb-fld wide"><input class="mb-txt" type="text" value="' + esc(values[fld.id] || '') + '" placeholder="' + esc(fld.placeholder || '') + '" data-txt="' + fld.id + '" aria-label="' + esc(f.title) + '"></label>';
+  function fieldActive(f, fld) {
+    if (fld.show_if) {
+      var allowed = Array.isArray(fld.show_if[1]) ? fld.show_if[1] : [fld.show_if[1]];
+      return allowed.indexOf(values[fld.show_if[0]]) > -1;
     }
-    return '<div class="mb-fld"><span class="mb-step"><button type="button" class="mb-sb" data-step="1" data-for="' + fld.id + '" aria-label="افزایش">+</button>' +
-      '<input class="mb-num" type="number" min="' + fld.min + '" max="' + fld.max + '" value="' + esc(values[fld.id]) + '" data-num="' + fld.id + '" aria-label="' + esc(fld.unit || f.title) + '">' +
-      '<button type="button" class="mb-sb" data-step="-1" data-for="' + fld.id + '" aria-label="کاهش">−</button></span>' + (fld.unit ? '<span class="mb-unit">' + esc(fld.unit) + '</span>' : '') + '</div>';
+    return f.type !== 'toggle' || isOn(f);
+  }
+  function fieldHtml(f, fld, off) {
+    var dis = off ? ' disabled' : '';
+    var cls = 'mb-fld' + (off ? ' is-disabled' : '');
+    if (fld.type === 'text') {
+      return '<label class="' + cls + ' wide"><input class="mb-txt" type="text" value="' + esc(values[fld.id] || '') + '" placeholder="' + esc(fld.placeholder || '') + '" data-txt="' + fld.id + '" aria-label="' + esc(f.title) + '"' + dis + '></label>';
+    }
+    if (fld.type === 'color') {
+      return '<label class="' + cls + '"><input class="mb-clr" type="color" value="' + esc(values[fld.id] || fld['default']) + '" data-color="' + fld.id + '" aria-label="' + esc(fld.label || f.title) + '"' + dis + '><span class="mb-unit">' + esc(fld.label || '') + '</span></label>';
+    }
+    if (fld.type === 'image') {
+      var u = values[fld.id] || '';
+      return '<div class="' + cls + ' wide mb-img">' + (u ? '<img src="' + esc(u) + '" alt="">' : '<span class="mb-img-ph">' + icon('image') + '</span>') +
+        '<button type="button" class="mb-btn sm" data-pick="' + fld.id + '"' + dis + '>' + icon('image') + (u ? 'تغییر تصویر' : 'انتخاب از رسانه‌ها') + '</button>' +
+        (u ? '<button type="button" class="mb-ibtn danger" data-unpick="' + fld.id + '" data-tip="حذف تصویر" aria-label="حذف تصویر"' + dis + '>' + icon('x') + '</button>' : '') + '</div>';
+    }
+    return '<div class="' + cls + '"><span class="mb-step"><button type="button" class="mb-sb" data-step="1" data-for="' + fld.id + '" aria-label="افزایش"' + dis + '>+</button>' +
+      '<input class="mb-num" type="number" min="' + fld.min + '" max="' + fld.max + '" value="' + esc(values[fld.id]) + '" data-num="' + fld.id + '" aria-label="' + esc(fld.unit || f.title) + '"' + dis + '>' +
+      '<button type="button" class="mb-sb" data-step="-1" data-for="' + fld.id + '" aria-label="کاهش"' + dis + '>−</button></span>' + (fld.unit ? '<span class="mb-unit">' + esc(fld.unit) + '</span>' : '') + '</div>';
   }
   function noticesHtml() {
     var list = D.hiddenNotices || [];
@@ -250,22 +276,20 @@
         return '<div class="mb-found-r"><span class="mb-hn-t">' + esc(n.text || 'اعلان (متنی ذخیره نشده است)') + '</span><button type="button" class="mb-ibtn" data-unhide="' + esc(n.hash) + '" data-tip="نمایش دوباره" aria-label="نمایش دوباره">' + icon('eye') + '</button></div>';
       }).join('') + '</div>';
   }
+  /* زیرگزینه‌ها همیشه دیده می‌شوند، ولی تا وقتی امکان اصلی فعال نباشد غیرفعال‌اند */
   function extraHtml(f) {
     var out = '', inline = '';
-    var visible = f.type !== 'toggle' || isOn(f);
-    if (f.type === 'checks') out += checksHtml(f.id, f.options || {}, f.ui === 'dropdown');
-    if (f.type === 'textarea') out += taHtml(f, f);
+    if (f.type === 'checks') out += checksHtml(f.id, f.options || {}, f.ui === 'dropdown', f.available === false);
+    if (f.type === 'textarea') out += taHtml(f, f, false);
     if (f.type === 'tree') out += treeHtml(f);
     if (f.type === 'learned') out += learnedHtml(f);
     if (f.id === 'admin_notices') out += noticesHtml();
-    if (visible) {
-      (f.fields || []).forEach(function (fld) {
-        if (fld.show_if && values[fld.show_if[0]] !== fld.show_if[1]) return;
-        if (fld.type === 'number' || fld.type === 'text') inline += fieldHtml(f, fld);
-        if (fld.type === 'textarea') out += taHtml(f, fld);
-        if (fld.type === 'checks') out += checksHtml(fld.id, fld.options || {}, false);
-      });
-    }
+    (f.fields || []).forEach(function (fld) {
+      var off = !fieldActive(f, fld) || f.available === false;
+      if (fld.type === 'textarea') out += taHtml(f, fld, off);
+      else if (fld.type === 'checks') out += checksHtml(fld.id, fld.options || {}, fld.ui === 'dropdown', off);
+      else inline += fieldHtml(f, fld, off);
+    });
     if (inline) out = '<div class="mb-fields">' + inline + '</div>' + out;
     return out ? '<div class="mb-extra">' + out + '</div>' : '';
   }
@@ -296,13 +320,14 @@
   }
   /* چیدمان: اول ردیف‌های ساده، بعد ردیف‌های سنگین (کادر متنی و فهرست)، تا کنار هم ارتفاع ناهمسان نیایند */
   function rowsHtml(items, showCat) {
-    var light = [], heavy = [], wide = [], out = '';
+    var light = [], heavy = [], wide = [], last = [], out = '';
     if (showCat) light = items;
-    else items.forEach(function (f) { (isWide(f) ? wide : (isHeavy(f) ? heavy : light)).push(f); });
+    else items.forEach(function (f) { (f.last ? last : (isWide(f) ? wide : (isHeavy(f) ? heavy : light))).push(f); });
     light.forEach(function (f) { out += rowHtml(f, showCat); });
     if (light.length % 2) out += '<div class="mb-row mb-fill"></div>';
     heavy.forEach(function (f, i) { out += rowHtml(f, showCat, heavy.length % 2 === 1 && i === heavy.length - 1); });
     wide.forEach(function (f) { out += rowHtml(f, showCat, true); });
+    last.forEach(function (f) { out += rowHtml(f, showCat, true); });
     return '<div class="mb-rows">' + out + '</div>';
   }
 
@@ -377,8 +402,16 @@
     var issues = D.repo
       ? '<a class="mb-btn primary" href="' + esc(D.repo.replace(/\/$/, '')) + '/issues/new" target="_blank" rel="noopener noreferrer">' + icon('chat') + 'ثبت گزارش در گیت‌هاب</a>'
       : '<button class="mb-btn" disabled>' + icon('chat') + 'ثبت گزارش (به‌زودی)</button>';
+    var st = D.stats || { totals: {}, days: [] };
+    var T = st.totals || {};
+    var labels = [['http', 'درخواست خروجی مسدودشده'], ['fw', 'درخواست مشکوک مسدودشده'], ['login', 'ورود ناموفقِ قفل‌شده'], ['spam', 'دیدگاه اسپم ردشده'], ['assets', 'فایل خارجی حذف‌شده']];
+    var mx = Math.max(1, Math.max.apply(null, (st.days || []).map(function (d) { return d.n; }).concat([0])));
+    var impact = '<section class="mb-card mb-impact"><div class="mb-card-h">' + icon('chart') + 'گزارش تأثیر (۳۰ روز اخیر)<small>رویدادهای مسدودشده در ۱۴ روز اخیر</small></div><div class="mb-card-b">' +
+      '<div class="mb-imp-grid">' + labels.map(function (l) { return '<div class="mb-imp"><b>' + fa(T[l[0]] || 0) + '</b><span>' + l[1] + '</span></div>'; }).join('') + '</div>' +
+      '<div class="mb-spark" role="img" aria-label="نمودار رویدادهای مسدودشده">' + (st.days || []).map(function (d) { return '<i data-tip="' + esc(d.d) + ': ' + fa(d.n) + '" style="height:' + Math.max(4, Math.round(d.n / mx * 56)) + 'px"' + (d.n ? '' : ' class="z"') + '></i>'; }).join('') + '</div></div></section>';
     var s = D.site;
-    html += '<div class="mb-two">' +
+    html += impact + '<div class="mb-two" style="margin-top:16px">' +
+
       '<section class="mb-card"><div class="mb-card-h">فعال بر اساس بخش</div><div style="padding:8px 0">' + prog + '</div></section>' +
       '<section class="mb-card"><div class="mb-card-h">تماس با ما</div><div class="mb-card-b">' +
       '<p class="mb-tool-d">اگر افزونه مشکلی داشت، امکانی خراب کار کرد یا پیشنهادی دارید، آن را در بخش Issues گیت‌هاب ثبت کنید. هر چه توضیح دقیق‌تر باشد، زودتر رفع می‌شود (نسخه‌ی وردپرس، نسخه‌ی افزونه و مراحل بروز مشکل را بنویسید).</p>' + issues + '</div></section></div>';
@@ -389,8 +422,8 @@
       '<section class="mb-card"><div class="mb-card-h">ابزارها</div><div class="mb-card-b">' +
       '<p class="mb-tool-d">«تنظیمات پیشنهادی» فقط امکان‌های کم‌خطر را روشن می‌کند. «بازنشانی» همه‌ی گزینه‌ها را به حالت اولیه برمی‌گرداند. با «دریافت» و «وارد کردن» می‌توانید تنظیمات را روی سایت دیگر ببرید.</p>' +
       '<div class="mb-tools"><button class="mb-btn primary" id="mb-rec">' + icon('wand') + 'تنظیمات پیشنهادی</button>' +
-      '<button class="mb-btn" id="mb-export">' + icon('download') + 'دریافت تنظیمات</button>' +
-      '<button class="mb-btn" id="mb-import">' + icon('upload') + 'وارد کردن تنظیمات</button>' +
+      '<button class="mb-btn" id="mb-export">' + icon('download') + 'برون‌بری تنظیمات</button>' +
+      '<button class="mb-btn" id="mb-import">' + icon('upload') + 'درون‌ریزی تنظیمات</button>' +
       '<button class="mb-btn danger" id="mb-reset">' + icon('reset') + 'بازنشانی تنظیمات</button>' +
       '<input type="file" id="mb-file" accept="application/json,.json" hidden></div></div></section></div>';
     return html;
@@ -427,8 +460,10 @@
   function go(r) {
     route = r; query = '';
     history.replaceState(null, '', '#' + r);
-    render(true);
-    window.scrollTo(0, 0);
+    var cur = root.querySelector('.mb-main-in');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function swap() { render(true); window.scrollTo(0, 0); }
+    if (cur && !reduce) { cur.classList.add('mb-leave'); setTimeout(swap, 130); } else swap();
   }
 
   /* ───── رویدادها ───── */
@@ -446,12 +481,25 @@
     if (t.hasAttribute('data-go')) return go(t.getAttribute('data-go'));
     if (t.id === 'mb-theme') {
       localStorage.setItem('mbTheme', theme() === 'dark' ? 'light' : 'dark');
-      return applyTheme();
+      root.classList.add('mb-theming');
+      applyTheme();
+      return setTimeout(function () { root.classList.remove('mb-theming'); }, 450);
     }
     if (t.hasAttribute('data-sw')) {
       var f = byId[t.getAttribute('data-sw')];
       return changeFeature(f, isOn(f) ? 0 : 1);
     }
+    if (t.hasAttribute('data-pick')) {
+      var pk = t.getAttribute('data-pick');
+      if (!window.wp || !window.wp.media) return toast('کتابخانه‌ی رسانه در دسترس نیست.', true);
+      var frame = window.wp.media({ title: 'انتخاب تصویر', multiple: false, library: { type: 'image' }, button: { text: 'استفاده از این تصویر' } });
+      frame.on('select', function () {
+        var att = frame.state().get('selection').first().toJSON();
+        save(pk, att.url, function () { render(); });
+      });
+      return frame.open();
+    }
+    if (t.hasAttribute('data-unpick')) return save(t.getAttribute('data-unpick'), '', function () { render(); });
     if (t.hasAttribute('data-step')) {
       var fid = t.getAttribute('data-for');
       var sdef = findDef(fid);
@@ -480,7 +528,7 @@
       a.download = 'mb-settings-' + new Date().toISOString().slice(0, 10) + '.json';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-      return toast('فایل تنظیمات دریافت شد');
+      return toast('فایل برون‌بری تنظیمات دریافت شد');
     }
     if (t.id === 'mb-import') { var fi = document.getElementById('mb-file'); if (fi) fi.click(); return; }
     if (t.hasAttribute('data-dd')) {
@@ -554,9 +602,9 @@
         el.value = '';
         if (!obj || !obj.mb_settings || typeof obj.mb_settings !== 'object') return toast('این فایل تنظیمات معتبر نیست.', true);
         var n = Object.keys(obj.mb_settings).length;
-        confirmBox('وارد کردن تنظیمات', [fa(n) + ' گزینه از فایل خوانده شد.', 'تنظیمات فعلی با مقادیر این فایل جایگزین می‌شوند.'], 'وارد شود', function () {
-          post('mb_import', { data: rd.result }).then(function (d) { values = d.values; toast('تنظیمات وارد شد'); render(); })
-            .catch(function () { toast('وارد کردن انجام نشد.', true); });
+        confirmBox('درون‌ریزی تنظیمات', [fa(n) + ' گزینه از فایل خوانده شد.', 'تنظیمات فعلی با مقادیر این فایل جایگزین می‌شوند.'], 'درون‌ریزی شود', function () {
+          post('mb_import', { data: rd.result }).then(function (d) { values = d.values; toast('تنظیمات درون‌ریزی شد'); render(); })
+            .catch(function () { toast('درون‌ریزی انجام نشد.', true); });
         });
       };
       rd.readAsText(file);
@@ -580,6 +628,7 @@
       return save(tid, tl);
     }
     if (el.hasAttribute('data-txt')) return save(el.getAttribute('data-txt'), el.value);
+    if (el.hasAttribute('data-color')) return save(el.getAttribute('data-color'), el.value);
     if (el.hasAttribute('data-ta')) return save(el.getAttribute('data-ta'), el.value, function () { render(); });
     if (el.hasAttribute('data-sel')) {
       var sf = byId[el.getAttribute('data-sel')];

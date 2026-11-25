@@ -59,7 +59,7 @@ function mb_apply_more($o, $on) {
         add_filter('get_avatar_url', function () use ($custom, $svg) { return $custom !== '' ? esc_url($custom) : $svg; }, 99);
         add_filter('pre_get_avatar_data', function ($args) use ($custom, $svg) { $args['url'] = $custom !== '' ? esc_url($custom) : $svg; $args['found_avatar'] = true; return $args; }, 99);
     }
-    $sp = (int) $o['spam_cleaner'];
+    $sp = $on('spam_cleaner') ? (int) $o['spam_cleaner_days'] : 0;
     add_action('mb_spam_cleanup', function () use ($sp) {
         if ($sp < 1) return;
         $ids = get_comments(['status' => 'spam', 'number' => 200, 'fields' => 'ids', 'date_query' => [['before' => $sp . ' days ago']]]);
@@ -90,7 +90,10 @@ function mb_apply_more($o, $on) {
     }
     if ($on('screen_options')) add_filter('screen_options_show_screen', '__return_false');
     if ($on('help_tabs')) add_action('admin_head', function () { $s = get_current_screen(); if ($s) $s->remove_help_tabs(); });
-    if ($on('hide_admin_bar')) add_filter('show_admin_bar', function ($s) { return current_user_can('manage_options') ? $s : false; });
+    if ($o['hide_admin_bar'] !== 'off') {
+        $hab = $o['hide_admin_bar'];
+        add_filter('show_admin_bar', function ($s) use ($hab) { if ($hab === 'all') return false; return current_user_can('manage_options') ? $s : false; });
+    }
 
     $mode = $o['admin_notices'];
     if ($mode === 'all' || $mode === 'non_admin') {
@@ -234,6 +237,7 @@ function mb_apply_more($o, $on) {
 
     mb_apply_woo($o, $on);
     mb_apply_third($o, $on);
+    mb_apply_extra($o, $on);
     mb_apply_fonts($o, $on);
     mb_apply_secure($o, $on);
     mb_apply_net($o, $on);
@@ -278,7 +282,16 @@ function mb_apply_woo($o, $on) {
     if ($on('wc_marketing')) {
         add_filter('woocommerce_marketing_menu_items', '__return_empty_array');
         add_filter('woocommerce_admin_features', function ($f) { $k = array_search('marketing', (array) $f, true); if ($k !== false) unset($f[$k]); return $f; });
-        add_action('admin_menu', function () { remove_submenu_page('woocommerce', 'wc-admin&path=/marketing'); remove_menu_page('woocommerce-marketing'); }, 999);
+        add_action('admin_menu', function () use ($on) {
+            global $submenu;
+            $slug = 'edit.php?post_type=shop_coupon';
+            $have = false;
+            foreach ((array) (isset($submenu['woocommerce']) ? $submenu['woocommerce'] : []) as $it) { if (isset($it[2]) && $it[2] === $slug) $have = true; }
+            // کدهای تخفیف داخل منوی بازاریابی است؛ با حذف آن، زیرمنو به منوی ووکامرس منتقل می‌شود (مگر کدهای تخفیف خاموش باشد)
+            if (!$have && !$on('wc_coupons') && current_user_can('manage_woocommerce')) add_submenu_page('woocommerce', 'کدهای تخفیف', 'کدهای تخفیف', 'manage_woocommerce', $slug);
+            remove_submenu_page('woocommerce', 'wc-admin&path=/marketing');
+            remove_menu_page('woocommerce-marketing');
+        }, 999);
     }
     if ($on('wc_helper')) add_filter('woocommerce_helper_suppress_admin_notices', '__return_true');
     if ($on('wc_marketplace')) add_filter('woocommerce_allow_marketplace_suggestions', '__return_false', 999);
@@ -314,7 +327,9 @@ function mb_apply_woo($o, $on) {
     if ($on('wc_cart_fragments')) add_action('wp_enqueue_scripts', function () { wp_dequeue_script('wc-cart-fragments'); }, 99);
     if ($on('wc_blocks_frontend')) {
         add_action('wp_enqueue_scripts', function () {
-            foreach (['wc-blocks-vendors-style', 'wc-all-blocks-style', 'wc-blocks-style', 'wc-blocks-packages-style', 'wc-blocks-style-all-products'] as $s) wp_deregister_style($s);
+            foreach (array_keys((array) wp_styles()->registered) as $h) {
+                if (strpos($h, 'wc-blocks') === 0 || strpos($h, 'wc-block-') === 0) { wp_dequeue_style($h); wp_deregister_style($h); }
+            }
         }, 999);
     }
     if ($on('wc_widgets')) {
@@ -419,6 +434,7 @@ function mb_apply_third($o, $on) {
 
 /* ───── فونت‌ها ───── */
 function mb_apply_fonts($o, $on) {
+    if ($on('fonts_swap')) add_filter('elementor_pro/custom_fonts/font_display', function () { return 'swap'; });
     if ($on('elementor_google_fonts')) add_filter('elementor/frontend/print_google_fonts', '__return_false');
     if (!($on('fonts_remove') || $on('fonts_local') || $on('fonts_swap') || $on('fa_async'))) return;
     add_action('template_redirect', function () use ($on) {

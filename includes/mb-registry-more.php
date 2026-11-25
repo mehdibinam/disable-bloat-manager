@@ -66,11 +66,17 @@ function mb_patch_features(&$f) {
 function mb_sort_features(&$f) {
     foreach ($f as $i => &$x) $x['_i'] = $i;
     unset($x);
-    $rank = function ($x) {
-        if ($x['cat'] !== 'thirdparty') return 0;
-        if ($x['section'] === 'فونت‌های گوگل') return 0;
-        if ($x['section'] === 'المنتور') return 1;
-        return 2;
+    // ترتیب بخش‌ها داخل هر منو؛ بخش‌های ناشناخته وسط می‌آیند و «اعلان‌ها» و «حالت و فهرست‌ها» همیشه آخرند
+    $order = [
+        'admin' => ['سرعت پیشخوان', 'ویجت‌های صفحه‌ی اصلی پیشخوان', 'نوار و ظاهر پیشخوان', 'صفحه‌ی ورود', 'ذخیره‌ی نوشته‌ها', 'تصاویر و بارگذاری', 'رسانه', 'ابزارهای وردپرس', 'سربرگ صفحه', 'اسکریپت‌ها و استایل‌ها', 'فید و نقشه‌ی سایت', 'آدرس‌ها و نوشتار', 'به‌روزرسانی خودکار', 'اعلان‌ها'],
+        'thirdparty' => ['فونت‌های گوگل', 'المنتور'],
+        'domains' => ['نحوه‌ی مسدودسازی', 'پایداری و حریم خصوصی', 'حالت و فهرست‌ها'],
+    ];
+    $rank = function ($x) use ($order) {
+        if (!isset($order[$x['cat']])) return 50;
+        $k = array_search($x['section'], $order[$x['cat']], true);
+        if ($k === false) return 50 + ($x['cat'] === 'admin' ? 0 : 5);
+        return $x['cat'] === 'thirdparty' ? $k : $k + ($k + 1 === count($order[$x['cat']]) ? 100 : 0);
     };
     usort($f, function ($a, $b) use ($rank) {
         $ra = $rank($a); $rb = $rank($b);
@@ -222,5 +228,5 @@ function mb_features_more() {
     $f[] = mb_f('fa_async', 'thirdparty', $S, 'بارگذاری ناهمگام Font Awesome', 'فایل استایل Font Awesome بدون مسدودکردن نمایش صفحه بارگذاری می‌شود.');
     $f[] = mb_f('elementor_google_fonts', 'thirdparty', $S, 'حذف فونت گوگل المنتور', 'المنتور فونت‌های گوگل را از اینترنت نمی‌گیرد.', $EL);
 
-    return array_merge($f, mb_features_secure());
+    return array_merge($f, mb_features_secure(), mb_features_extra());
 }

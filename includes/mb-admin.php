@@ -22,6 +22,7 @@ add_filter('admin_body_class', function ($c) {
 
 add_action('admin_enqueue_scripts', function ($hook) {
     if ($hook !== mb_admin_hook()) return;
+    wp_enqueue_media();
     wp_enqueue_style('mb-admin', MB_URL . 'assets/css/mb-admin.css', [], MB_VERSION);
     wp_enqueue_script('mb-admin', MB_URL . 'assets/js/mb-admin.js', [], MB_VERSION, true);
 
@@ -53,6 +54,7 @@ add_action('admin_enqueue_scripts', function ($hook) {
         'learned'  => mb_learned_list(),
         'hiddenNotices' => mb_hidden_notices_list(),
         'update'   => mb_update_state(),
+        'stats'    => mb_stats_summary(),
         'site'     => [
             'wp'      => get_bloginfo('version'),
             'php'     => PHP_VERSION,

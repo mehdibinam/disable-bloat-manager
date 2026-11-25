@@ -41,6 +41,7 @@ function mb_host_listed($host, $list) {
     return false;
 }
 function mb_deny($code, $msg) {
+    mb_stat_inc('fw');
     if (!headers_sent()) { status_header($code); nocache_headers(); header('Content-Type: text/plain; charset=utf-8'); }
     echo $msg;
     exit;
@@ -87,11 +88,14 @@ function mb_apply_secure($o, $on) {
         add_filter('rest_pre_dispatch', function ($r, $server, $request) use ($mode, $pub) {
             $ns = trim($request->get_route(), '/');
             foreach ($pub as $p) if ($p !== '' && ($ns === $p || strpos($ns, $p . '/') === 0)) return $r;
-            $ok = $mode === 'logged_in' ? is_user_logged_in() : current_user_can('edit_posts');
+            $ok = $mode === 'logged_in' ? is_user_logged_in() : current_user_can('manage_options');
             return $ok ? $r : new WP_Error('rest_forbidden', 'دسترسی به REST API محدود شده است.', ['status' => 401]);
         }, 5, 3);
     }
-    if ($on('unregister_tags')) add_action('init', function () { unregister_taxonomy_for_object_type('post_tag', 'post'); }, 100);
+    if ($on('unregister_tags')) {
+        add_action('init', function () { unregister_taxonomy_for_object_type('post_tag', 'post'); }, 100);
+        add_action('admin_menu', function () { remove_submenu_page('edit.php', 'edit-tags.php?taxonomy=post_tag'); }, 999);
+    }
 
     /* هدرها */
     if ($on('sec_headers') || $on('sec_hsts')) {
@@ -116,7 +120,7 @@ function mb_apply_secure($o, $on) {
         $tries = (int) $o['login_limit_tries']; $win = (int) $o['login_limit_window'] * 60; $lock = (int) $o['login_limit_lock'] * 60;
         $k = 'mb_ll_' . md5($ip); $lk = 'mb_lk_' . md5($ip);
         add_filter('authenticate', function ($user) use ($lk, $ip, $allow) {
-            if ($ip && !mb_ip_in($ip, $allow) && get_transient($lk)) return new WP_Error('mb_locked', 'تعداد تلاش‌های ناموفق زیاد بود. چند دقیقه‌ی دیگر دوباره تلاش کنید.');
+            if ($ip && !mb_ip_in($ip, $allow) && get_transient($lk) && !mb_stat_inc('login')) return new WP_Error('mb_locked', 'تعداد تلاش‌های ناموفق زیاد بود. چند دقیقه‌ی دیگر دوباره تلاش کنید.');
             return $user;
         }, 1);
         add_action('wp_login_failed', function () use ($k, $lk, $tries, $win, $lock, $ip, $allow) {
@@ -250,7 +254,7 @@ function mb_apply_net($o, $on) {
     if ($on('net_learn')) mb_learn_hook();
     if ($active) {
         add_filter('pre_http_request', function ($pre, $args, $url) use ($o) {
-            return mb_net_blocked($url, $o) ? new WP_Error('mb_net_blocked', 'درخواست توسط Disable Bloat Manager مسدود شد.') : $pre;
+            return mb_net_blocked($url, $o) ? mb_http_block() : $pre;
         }, 1, 3);
     }
     if ($on('net_timeout')) {
@@ -266,7 +270,7 @@ function mb_apply_net($o, $on) {
             $p = wp_parse_url($url);
             $h = isset($p['host']) ? $p['host'] : '';
             if (in_array($h, ['stats.wordpress.org', 'planet.wordpress.org'], true) || ($h === 'wordpress.org' && !empty($p['path']) && strpos($p['path'], '/news/feed') === 0) || ($h === 'api.wordpress.org' && !empty($p['path']) && strpos($p['path'], '/events/') === 0)) {
-                return new WP_Error('mb_net_blocked', 'درخواست توسط Disable Bloat Manager مسدود شد.');
+                return mb_http_block();
             }
             return $pre;
         }, 1, 3);
@@ -276,7 +280,7 @@ function mb_apply_net($o, $on) {
         add_filter('pre_http_request', function ($pre, $args, $url) {
             $p = wp_parse_url($url);
             if (!empty($p['host']) && $p['host'] === 'api.wordpress.org' && !empty($p['path']) && preg_match('#^/(core/version-check|plugins/update-check|themes/update-check|core/browse-happy|translations)#', $p['path'])) {
-                return new WP_Error('mb_net_blocked', 'بررسی به‌روزرسانی توسط Disable Bloat Manager متوقف شد.');
+                return mb_http_block();
             }
             return $pre;
         }, 1, 3);
@@ -287,7 +291,7 @@ function mb_apply_net($o, $on) {
         $start = function () use ($o) {
             ob_start(function ($html) use ($o) {
                 if (!is_string($html) || stripos($html, '<html') === false) return $html;
-                $html = preg_replace_callback('#<link\b[^>]*\bhref=["\']([^"\']+)["\'][^>]*>#i', function ($m) use ($o) { return mb_net_blocked(html_entity_decode($m[1]), $o) ? '' : $m[0]; }, $html);
+                $html = preg_replace_callback('#<link\b[^>]*\bhref=["\']([^"\']+)["\'][^>]*>#i', function ($m) use ($o) { return mb_net_blocked(html_entity_decode($m[1]), $o) ? (mb_stat_inc('assets') ?: '') : $m[0]; }, $html);
                 $html = preg_replace_callback('#<script\b[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>\s*</script>#i', function ($m) use ($o) { return mb_net_blocked(html_entity_decode($m[1]), $o) ? '' : $m[0]; }, $html);
                 $html = preg_replace_callback('#<iframe\b[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>\s*</iframe>#i', function ($m) use ($o) { return mb_net_blocked(html_entity_decode($m[1]), $o) ? '' : $m[0]; }, $html);
                 return $html;
@@ -342,6 +346,25 @@ function mb_learn_collect($html) {
     update_option('mb_net_learned', array_slice($cur, 0, 200, true), false);
 }
 
+function mb_http_block() {
+    mb_stat_inc('http');
+    return new WP_Error('mb_net_blocked', 'درخواست توسط مدیریت کارایی وردپرس مسدود شد.');
+}
+
+function mb_learn_flush() {
+    if (empty($GLOBALS['mb_srv_hosts'])) return;
+    $site = strtolower((string) wp_parse_url(home_url(), PHP_URL_HOST));
+    $cur = get_option('mb_net_learned', []);
+    if (!is_array($cur)) $cur = [];
+    $changed = false;
+    foreach (array_keys($GLOBALS['mb_srv_hosts']) as $h) {
+        if ($h === $site || $h === 'localhost' || strpos($h, '.') === false || filter_var($h, FILTER_VALIDATE_IP) || mb_host_listed($h, [$site])) continue;
+        $cur[$h] = (isset($cur[$h]) ? (int) $cur[$h] : 0) + 1;
+        $changed = true;
+    }
+    if ($changed) { arsort($cur); update_option('mb_net_learned', array_slice($cur, 0, 200, true), false); }
+}
+
 /** از بخش کوچکی از بازدیدهای عادی نمونه می‌گیرد؛ پس فشار قابل‌توجهی به سرور نمی‌آورد */
 function mb_learn_hook() {
     $start = function () {
@@ -349,6 +372,13 @@ function mb_learn_hook() {
         if (mt_rand(1, 12) !== 1) return;
         ob_start(function ($html) { mb_learn_collect($html); return $html; });
     };
+    // دامنه‌هایی که خود سایت از سمت سرور صدا می‌زند هم یاد گرفته می‌شود؛ فقط یک بار در پایان درخواست نوشته می‌شود
+    add_filter('pre_http_request', function ($pre, $args, $url) {
+        $h = strtolower((string) wp_parse_url($url, PHP_URL_HOST));
+        if ($h !== '' && empty($GLOBALS['mb_updating'])) $GLOBALS['mb_srv_hosts'][$h] = 1;
+        return $pre;
+    }, 5, 3);
+    add_action('shutdown', 'mb_learn_flush');
     add_action('template_redirect', function () use ($start) { if (!is_feed() && !is_embed() && !is_robots()) $start(); }, 5);
     add_action('admin_init', function () use ($start) { if (!wp_doing_ajax() && !(defined('DOING_CRON') && DOING_CRON)) $start(); }, 0);
 }

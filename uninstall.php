@@ -6,6 +6,7 @@ if (!defined('WP_UNINSTALL_PLUGIN')) exit;
 
 delete_option('mb_options');
 delete_option('mb_net_learned');
+delete_option('mb_stats');
 delete_site_transient('mb_update_info');
 
 global $wpdb;

@@ -2,7 +2,7 @@
 
 ## مدیریت کارایی وردپرس | WP Performance Manager
 
-![Version](https://img.shields.io/badge/version-2.3.0-blue) ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-Source--Available-orange) [![Download](https://img.shields.io/badge/download-v2.3.0-brightgreen)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)
+![Version](https://img.shields.io/badge/version-2.4.0-blue) ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-Source--Available-orange) [![Download](https://img.shields.io/badge/download-v2.4.0-brightgreen)](https://github.com/mehdibinam/disable-bloat-manager/releases/latest)
 
 [فارسی](#فارسی) · [English](#english)
 
@@ -51,7 +51,16 @@
 - در صورت قفل‌شدن پیشخوان، پوشه‌ی افزونه را موقتاً تغییر نام دهید یا خط `MB_DISABLE_LOGIN_URL` را به `wp-config.php` اضافه کنید.
 - اگر در `wp-config.php` ثابت `WP_HTTP_BLOCK_EXTERNAL` را روشن کرده‌اید، `api.github.com` و `github.com` را به `WP_ACCESSIBLE_HOSTS` اضافه کنید تا بررسی و نصب به‌روزرسانی افزونه کار کند. همچنین `DISALLOW_FILE_MODS` جلوی نصب به‌روزرسانی از پیشخوان را می‌گیرد.
 
-### تازه‌های نسخه ۲٫۳
+### تازه‌های نسخه ۲٫۴
+
+- **منوی «امکانات ویژه»:** علاوه بر خاموش‌کردن، امکانات کاربردی هم دارد: تکثیر نوشته/برگه/منو، ستون تصویر شاخص، اسکرول بی‌نهایت یا بارگذاری بیشتر برای رسانه، ارتفاع دلخواه ویرایشگر، قالب‌های المنتور در ویرایشگر کلاسیک، انتشار با Ajax، برون‌بری XML تکی، کلیک‌پذیر کردن سکشن و ستون المنتور، فونت وزیرمتن در سایت، ادامه‌ی مطالعه، افزودن منبع هنگام کپی، اعتبارسنجی موبایل ایران (المنتور پرو و Gravity Forms)، پالت رنگ سفارشی پنل مدیریت، ستون لوگوی افزونه‌ها و ویجت داشبورد.
+- **منوی «پیشخوان» یکپارچه شد:** «سمت بازدیدکننده» و «به‌روزرسانی‌ها» در آن ادغام شدند و همه‌ی ویجت‌های صفحه‌ی اصلی پیشخوان در یک بخش‌اند.
+- **امکان‌های تازه:** غیرفعال‌سازی بلوک‌های انتخابی گوتنبرگ، ضد اسپم دیدگاه (Honeypot، زمان، حذف فیلد وب‌سایت)، بارگذاری هوشمند CF7، خاموش‌کردن Lazy Load، Speculative Loading و srcset، تصویر پس‌زمینه‌ی ورود، غیرفعال‌سازی کد تخفیف، برچسب محصول و SKU، حذف فیلدهای تسویه‌حساب و WP‑Cron.
+- **گزارش تأثیر:** در «نمای کلی» و ویجت داشبورد، تعداد درخواست‌ها و حمله‌های مسدودشده، قفل‌های ورود، اسپم ردشده و فایل‌های حذف‌شده در ۳۰ روز اخیر و نمودار ۱۴ روزه نمایش داده می‌شود.
+- **بهبود رابط:** زیرگزینه‌ها همیشه دیده می‌شوند ولی تا فعال‌شدن امکان اصلی غیرفعال‌اند؛ انتخاب تصویر از رسانه‌ها؛ لیست پیشنهاد دامنه سه‌ستونه با دکمه‌ی قرمز «مسدود کردن»؛ انیمیشن نرم جابه‌جایی منو و تغییر حالت تیره/روشن؛ منوی مرتبط با امکان‌های خاموش‌شده (مثل هوش مصنوعی و MCP المنتور) خودکار پنهان می‌شود.
+- **یادگیری دامنه‌ها** حالا دامنه‌ی درخواست‌های سروری سایت را هم یاد می‌گیرد.
+
+### نسخه ۲٫۳
 
 - **دکمه‌ی به‌روزرسانی:** هر وقت نسخه‌ی جدیدی در [Releases](https://github.com/mehdibinam/disable-bloat-manager/releases) گیت‌هاب منتشر شود، کنار دکمه‌ی حالت تیره/روشن یک دکمه‌ی به‌روزرسانی ظاهر می‌شود و نسخه‌ی جدید در فهرست به‌روزرسانی‌های وردپرس هم دیده می‌شود. بررسی نسخه فقط در پس‌زمینه و با زمان انتظار کوتاه انجام می‌شود، پس قطع‌بودن گیت‌هاب سایت را کند نمی‌کند.
 - **برچسب‌های رنگی:** «پیشنهادی» سبز، «نیازمند بررسی» زرد و برای امکان‌های بسیار حساس (مثل آدرس ورود سفارشی، قطع بررسی به‌روزرسانی هسته و فایروال) برچسب قرمز «حساسیت بالا».
@@ -94,22 +103,21 @@
 <tr><th>بخش</th><th>چه کاری می‌کند</th></tr>
 </thead>
 <tbody>
-<tr><td>پیشخوان</td><td>اعلان‌ها، ویجت‌ها، نوار بالا، Heartbeat، نسخه‌های پیشین، صفحه‌ی ورود</td></tr>
-<tr><td>سمت بازدیدکننده</td><td>حذف ایموجی، لینک‌ها و برچسب‌های اضافه‌ی سربرگ، اسکریپت‌های بلااستفاده، فید و نقشه‌ی سایت</td></tr>
+<tr><td>پیشخوان</td><td>ویجت‌ها، اعلان‌ها، نوار بالا، Heartbeat، صفحه‌ی ورود، کدهای اضافه‌ی سربرگ و فایل‌های سایت، فید و نقشه، و به‌روزرسانی‌های وردپرس</td></tr>
 <tr><td>دیدگاه‌ها</td><td>بستن کامل یا جزئی دیدگاه، پینگ‌بک، Gravatar و پاک‌سازی خودکار اسپم</td></tr>
 <tr><td>ویرایشگر و ابزارک‌ها</td><td>غیرفعال‌سازی گوتنبرگ و بخش‌های اضافه‌ی آن، حذف همه یا برخی ابزارک‌های هسته</td></tr>
-<tr><td>به‌روزرسانی‌ها</td><td>کنترل به‌روزرسانی خودکار هسته، افزونه‌ها و قالب‌ها</td></tr>
 <tr><td>ووکامرس</td><td>تبلیغات و ماژول‌های اضافه‌ی ووکامرس، Cart Fragments و اسکریپت‌ها</td></tr>
 <tr><td>فونت و افزونه‌ها</td><td>حذف یا میزبانی محلی فونت گوگل؛ المنتور؛ پنهان‌کردن تبلیغات Jetpack، Yoast و …</td></tr>
 <tr><td>هوش مصنوعی</td><td>خاموش‌کردن AI وردپرس (و صفحه‌ی اتصال‌دهنده‌ها) و AI افزونه‌ها</td></tr>
 <tr><td>امنیت</td><td>سخت‌سازی، هدرهای امنیتی، محافظت از ورود، آدرس ورود سفارشی و فایروال</td></tr>
 <tr><td>مسدودسازی دامنه‌ها</td><td>فهرست سیاه یا سفید دامنه، یادگیری خودکار دامنه‌های خارجی و قطع درخواست‌های کندکننده</td></tr>
 <tr><td>مخفی‌سازی منوها</td><td>مخفی‌کردن منوها و زیرمنوهای پیشخوان و نوار بالا با تشخیص خودکار افزونه‌های جدید</td></tr>
+<tr><td>امکانات ویژه</td><td>تکثیر، برون‌بری XML، فونت وزیرمتن، پالت رنگ، المنتور و امکانات کاربردی دیگر</td></tr>
 </tbody>
 </table>
 
 
-فهرست کامل (۱۶۱ امکان) با توضیح هر کدام: **[docs/FEATURES-Fa.md](docs/FEATURES-Fa.md)**
+فهرست کامل (۱۹۶ امکان) با توضیح هر کدام: **[docs/FEATURES-Fa.md](docs/FEATURES-Fa.md)**
 
 ### پرسش‌های متداول
 
@@ -163,7 +171,16 @@ Everything is off by default (minimal by default) — you decide what runs. Sens
 - If you get locked out of the dashboard, temporarily rename the plugin folder or add `MB_DISABLE_LOGIN_URL` to `wp-config.php`.
 - If `WP_HTTP_BLOCK_EXTERNAL` is on in `wp-config.php`, add `api.github.com` and `github.com` to `WP_ACCESSIBLE_HOSTS` so update checks and installs work. `DISALLOW_FILE_MODS` also blocks installing updates from the dashboard.
 
-### What's new in v2.3
+### What's new in v2.4
+
+- **"Special features" menu** with useful extras on top of switching things off: duplicate posts/pages/menus, thumbnail column, media infinite scroll/load more, editor height, Elementor templates in the classic editor, Ajax publish, single-post XML export, clickable Elementor sections/columns, Vazirmatn font, reading-position resume, copy credit line, Iranian mobile validation (Elementor Pro, Gravity Forms), custom admin color palette, plugin-logo column, and a dashboard widget.
+- **Unified "Dashboard" menu:** the visitor-side and updates sections merged into it; every dashboard-widget switch lives in one section.
+- **New options:** selective Gutenberg block disabling, comment anti-spam (honeypot, time trap, no website field), smart CF7 loading, switch off Lazy Load / Speculative Loading / srcset, login background image, disable coupons, product tags and SKU, remove checkout fields, WP-Cron.
+- **Impact report:** Overview and the dashboard widget show blocked outgoing requests, blocked attacks, login lockouts, rejected spam and removed files over 30 days, plus a 14-day chart.
+- **UI:** sub-options are always visible but disabled until the parent option is on; media-library image picker; 3-column domain suggestions with a red "Block" button; smooth menu and dark-mode transitions; menus of disabled features (e.g. AI, Elementor MCP) are hidden automatically.
+- **Domain learning** now also learns hosts of the site's own server-side requests.
+
+### v2.3
 
 - **Update button:** when a new release is published on GitHub, an update button appears next to the dark-mode toggle, and the new version also shows in WordPress's update list. Checks run in the background with a short timeout and cached results, so an unreachable GitHub never slows your site.
 - **Colored badges:** "Recommended" in green, "Needs review" in yellow, and a red "High sensitivity" label for risky options (custom login URL, core update checks, firewall, …).
@@ -197,7 +214,7 @@ Everything is off by default (minimal by default) — you decide what runs. Sens
 - **Updating:** when a new GitHub release exists, click the cloud button next to the dark-mode icon; it runs the standard WordPress plugin update.
 - Locked out by the custom login URL? Add `define( 'MB_DISABLE_LOGIN_URL', true );` to `wp-config.php`.
 
-### What it covers (161 options)
+### What it covers (196 options)
 
 - **Dashboard:** notices (hide all / per notice), widgets (per widget), admin bar, Heartbeat, revisions, login page.
 - **Visitor side:** emojis, head clutter, unused scripts/styles, feeds, sitemap, Google Maps, block styles.

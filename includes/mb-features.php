@@ -183,7 +183,8 @@ function mb_apply_features() {
             if ($hb === 'editor' && in_array($pagenow, ['post.php', 'post-new.php'], true)) return;
             wp_deregister_script('heartbeat');
         }, 1);
-    } elseif ($hb === 'slow') {
+    }
+    if ($hb === 'slow' || $hb === 'editor') {
         $freq = max(15, min(120, (int) $o['heartbeat_freq']));
         add_filter('heartbeat_settings', function ($settings) use ($freq) {
             $settings['interval'] = $freq;
