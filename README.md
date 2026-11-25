@@ -16,6 +16,7 @@
 
 **مدیریت کارایی وردپرس** مجموعه‌ای دسته‌بندی‌شده برای خاموش‌کردن بخش‌های اضافه‌ی وردپرس، ووکامرس و افزونه‌هاست؛ همراه با ابزارهای امنیت و کنترل ارتباط سایت با دامنه‌های بیرونی. هر امکان یک راهنمای ساده دارد (با رفتن روی علامت «؟») و رابط کاملاً فارسی و راست‌به‌چپ است.
 
+<!-- DO NOT REMOVE: user-provided screenshot (not present in the plugin ZIP). Keep this <img> when replacing README. See docs/README-IMAGE.md -->
 <img width="1597" height="872" alt="disable-bloat-manager" src="https://github.com/user-attachments/assets/0cf19e4f-24b1-47f1-89c4-1312e2552f0d" />
 
 ### ایدهٔ اولیه
